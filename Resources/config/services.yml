@@ -1,6 +1,15 @@
+parameters:
+  lsw_gettext_translation_extension.class: Lsw\GettextTranslationBundle\Extension\GettextTranslationExtension
+  lsw_gettext_locale_listener.class: Lsw\GettextTranslationBundle\Routing\GettextLocaleListener
+  
 services:
   lsw_gettext_translation_extension:
-    class: Lsw\GettextTranslationBundle\Extension\GettextTranslationExtension
+    class: %lsw_gettext_translation_extension.class%
     arguments: [@router,@service_container]
     tags:
       - { name: twig.extension }
+  lsw_gettext_locale_listener:
+    class: %lsw_gettext_locale_listener.class%
+    arguments: [@router]
+    tags:
+      - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }

@@ -13,8 +13,8 @@ class GettextTranslationExtension extends \Twig_Extension {
   
   public function __construct(UrlGeneratorInterface $generator,Container $container)
   {
-    $this->container = $container;
     $this->generator = $generator;
+    $this->container = $container;
   }
   
   public function getFunctions()

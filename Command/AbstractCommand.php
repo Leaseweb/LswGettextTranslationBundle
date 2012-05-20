@@ -60,6 +60,11 @@ abstract class AbstractCommand extends ContainerAwareCommand
     protected function convertTwigToPhp($path, $name)
     {
         $results = array();
+        
+        if (!file_exists(dirname($path))) {
+          mkdir(dirname($path), 0755, true);
+        }
+        
         $templates = $this->findFilesInFolder(dirname($path) . '/../views', 'twig');
                
         $php  = "<?php\n";
@@ -77,26 +82,26 @@ abstract class AbstractCommand extends ContainerAwareCommand
             $results[$templateFileName]='Scanned';
         }
         
-        if (!file_exists(dirname($path))) {
-            mkdir(dirname($path), 0755, true);
-        }
         if (!file_put_contents($path, $php)) {
             throw new \Exception('Cannot write intermediate PHP code for twig templates to twig.cache.php in: '.$path);
         }
+        echo $path; echo file_exists($path);
         return $results;
     }
     
     protected function extractFromPhp($path)
     {
         $results = array();
-        $files = $this->findFilesInFolder(dirname($path) . '/../..', 'php');
         
         if (!file_exists(dirname($path))) {
-          mkdir(dirname($path), 0755, true);
+            mkdir(dirname($path), 0755, true);
         }
         if (file_exists("$path.tmp"))  {
-             unlink("$path.tmp");
+            unlink("$path.tmp");
         }
+        
+        $files = $this->findFilesInFolder(dirname($path) . '/../..', 'php');
+        
         $options = implode(' ',array(
             '--keyword=__:1',
             '--keyword=__n:1,2',
@@ -106,7 +111,7 @@ abstract class AbstractCommand extends ContainerAwareCommand
             '--force-po',
             '-L PHP',
             '-f -',
-            '-o "'.$path.'.tmp"',
+            "-o \"$path.tmp\"",
         ));
         $descriptors = array(
             0 => array("pipe", "r"),  // stdin
@@ -124,6 +129,7 @@ abstract class AbstractCommand extends ContainerAwareCommand
         if ($return!=0 && $output) {
           throw new \Exception($output);
         }
+        if ($output) echo "Warning: $output\n";
         if (!file_exists("$path.tmp")) {
             throw new \Exception('xgettext failed extracting messages for translating. Did you install gettext?');
             // tell about windows: http://www.gtk.org/download/win32.php
