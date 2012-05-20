@@ -1,0 +1,111 @@
+<?php
+
+/*
+ * This file is part of the FOSUserBundle package.
+ *
+ * (c) FriendsOfSymfony <http://friendsofsymfony.github.com/>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace Lsw\GettextTranslationBundle\Command;
+
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
+
+use Symfony\Component\Finder\Finder;
+use Symfony\Component\Routing\Exception\ResourceNotFoundException;
+
+/**
+ * ExtractBundleCommand extracts records to be translated from the specified bundle
+ * @author Maurits van der Schee <m.vanderschee@leaseweb.com>
+ * @author Andrii Shchurkov <a.shchurkov@leaseweb.com>
+ */
+class ExtractBundleCommand extends AbstractCommand
+{
+    /**
+     * @see Command
+     */
+    protected function configure()
+    {
+        $this
+            ->setName('gettext:bundle:extract')
+            ->setDescription('Extract translations from a bundle')
+            ->setDefinition(array(
+                new InputArgument('bundle', InputArgument::REQUIRED, 'The bundle'),
+                new InputOption('keep-cache', null, InputOption::VALUE_NONE, 'Do not delete the intermediate twig.cache.php file'),
+            ))
+            ->setHelp(<<<EOT
+The <info>gettext:bundle:extract</info> command extracts translations from a bundle:
+
+  <info>php app/console gettext:bundle:extract</info>
+
+This interactive shell will first ask you for a bundle name.
+
+You can alternatively specify the bundle as the first argument:
+
+  <info>php app/console gettext:bundle:extract FOSUserBundle</info>
+  
+You can keep the intermediate twig.cache.php file by specifying the keep-cache flag:
+
+  <info>php app/console gettext:bundle:extract FOSUserBundle --keep-cache</info>
+
+EOT
+            );
+    }
+
+    /**
+     * @see Command
+     */
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+        $root = $this->getContainer()->getParameter('kernel.root_dir');
+        chdir("$root/..");
+        $bundle = $input->getArgument('bundle');
+        $bundle = ltrim($bundle,'@');
+        $bundleObj = $this->getContainer()->get('kernel')->getBundle($bundle);
+        if (!$bundleObj) {
+            throw new ResourceNotFoundException("Cannot load bundle resource '$bundle'");
+        }
+        
+        $path = $bundleObj->getPath().'/Resources/gettext/messages.pot';
+        $twig = $bundleObj->getPath().'/Resources/gettext/twig.cache.php';
+        $results = $this->convertTwigToPhp($twig, $bundle);
+        foreach ($results as $filename => $status) {
+            $output->writeln("$status: $filename");
+        }
+        $results = $this->extractFromPhp($path);
+        foreach ($results as $filename => $status) {
+            $output->writeln("$status: $filename");
+        }
+        if (!$input->getOption('keep-cache')) {
+            unlink($twig);
+        }
+    }
+
+    /**
+     * @see Command
+     */
+    protected function interact(InputInterface $input, OutputInterface $output)
+    {
+        if (!$input->getArgument('bundle')) {
+            $bundle = $this->getHelper('dialog')->askAndValidate(
+                $output,
+                'Please give the bundle:',
+                function($bundle)
+                {
+                    if (empty($bundle)) {
+                        throw new \Exception('Bundle can not be empty');
+                    }
+
+                    return $bundle;
+                }
+            );
+            $input->setArgument('bundle', $bundle);
+        }
+    }
+}

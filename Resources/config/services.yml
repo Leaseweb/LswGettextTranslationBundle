@@ -1,0 +1,6 @@
+services:
+  lsw_gettext_translation_extension:
+    class: Lsw\GettextTranslationBundle\Extension\GettextTranslationExtension
+    arguments: [@router,@service_container]
+    tags:
+      - { name: twig.extension }
