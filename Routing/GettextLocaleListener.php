@@ -8,10 +8,12 @@ use Symfony\Component\Routing\Exception\InvalidParameterException;
 
 class GettextLocaleListener
 {
+  private $localeShortcuts;
   private $router;
   
-  public function __construct(RouterInterface $router)
+  public function __construct($localeShortcuts, RouterInterface $router)
   {
+    $this->localeShortcuts = $localeShortcuts;
     $this->router = $router;
   }
   
@@ -21,10 +23,19 @@ class GettextLocaleListener
     {
       $context = $this->router->getContext();
       $current = setlocale(LC_MESSAGES, 0);
+      if ($current && strpos($current,'.'))
+      {
+        list($current,$charset) = explode('.',$current);
+      }
       $requested = $context->getParameter('_locale');
-      if ($current != $requested)
+      if ($requested && strlen($requested)<5 && isset($this->localeShortcuts[$requested]))
+      {
+        $requested=$this->localeShortcuts[$requested];
+      }
+      if ($requested && $current != $requested)
       { 
-        if (!setlocale(LC_MESSAGES, $requested))
+        
+        if (!setlocale(LC_MESSAGES, $requested.'.UTF-8'))
         { 
           if ($event->getRequest()->getSession()->getLocale())
           {

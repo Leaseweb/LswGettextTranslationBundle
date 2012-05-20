@@ -1,0 +1,5 @@
+parameters:
+  gettext.locale_shortcuts:   # add shortcuts from locales.txt
+    nl: nl_NL                 # Dutch in NETHERLANDS
+    en: en_US                 # English in UNITED STATES
+    de: de_DE                 # German in GERMANY

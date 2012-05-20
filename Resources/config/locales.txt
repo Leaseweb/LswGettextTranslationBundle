@@ -1,0 +1,291 @@
+source: http://lh.2xlibre.net/locales/
+aa_DJ	— Afar —	DJIBOUTI
+aa_ER	— Afar —	ERITREA
+aa_ER@saaho	— Afar —	ERITREA
+aa_ET	— Afar —	ETHIOPIA
+af_ZA	— Afrikaans —	SOUTH AFRICA
+ak_GH	— Akan —	GHANA
+am_ET	— Amharic —	ETHIOPIA
+an_ES	— Aragonese —	SPAIN
+ar_AE	— Arabic —	UNITED ARAB EMIRATES
+ar_BH	— Arabic —	BAHRAIN
+ar_DZ	— Arabic —	ALGERIA
+ar_EG	— Arabic —	EGYPT
+ar_IN	— Arabic —	INDIA
+ar_IQ	— Arabic —	IRAQ
+ar_JO	— Arabic —	JORDAN
+ar_KW	— Arabic —	KUWAIT
+ar_LB	— Arabic —	LEBANON
+ar_LY	— Arabic —	LIBYAN ARAB JAMAHIRIYA
+ar_MA	— Arabic —	MOROCCO
+ar_OM	— Arabic —	OMAN
+ar_QA	— Arabic —	QATAR
+ar_SA	— Arabic —	SAUDI ARABIA
+ar_SD	— Arabic —	SUDAN
+ar_SY	— Arabic —	SYRIAN ARAB REPUBLIC
+ar_TN	— Arabic —	TUNISIA
+ar_YE	— Arabic —	YEMEN
+ast_ES	— Asturian —	SPAIN
+as_IN	— Assamese —	INDIA
+ay_PE	— Aymara —	PERU
+az_AZ	— Azerbaijani —	AZERBAIJAN
+bem_ZM	— Bemba (Zambia) —	ZAMBIA
+ber_DZ	— Berber languages —	ALGERIA
+ber_MA	— Berber languages —	MOROCCO
+be_BY	— Belarusian —	BELARUS
+be_BY@latin	— Belarusian —	BELARUS
+bg_BG	— Bulgarian —	BULGARIA
+bn_BD	— Bengali —	BANGLADESH
+bn_IN	— Bengali —	INDIA
+bo_CN	— Tibetan —	CHINA
+bo_IN	— Tibetan —	INDIA
+br_FR	— Breton —	FRANCE
+br_FR@euro	— Breton —	FRANCE
+bs_BA	— Bosnian —	BOSNIA AND HERZEGOVINA
+byn_ER	— Bilin —	ERITREA
+ca_AD	— Catalan —	ANDORRA
+ca_ES	— Catalan —	SPAIN
+ca_ES@euro	— Catalan —	SPAIN
+ca_FR	— Catalan —	FRANCE
+ca_IT	— Catalan —	ITALY
+crh_UA	— Crimean Tatar —	UKRAINE
+csb_PL	— Kashubian —	POLAND
+cs_CZ	— Czech —	CZECH REPUBLIC
+cv_RU	— Chuvash —	RUSSIAN FEDERATION
+cy_GB	— Welsh —	UNITED KINGDOM
+da_DK	— Danish —	DENMARK
+de_AT	— German —	AUSTRIA
+de_AT@euro	— German —	AUSTRIA
+de_BE	— German —	BELGIUM
+de_BE@euro	— German —	BELGIUM
+de_CH	— German —	SWITZERLAND
+de_DE	— German —	GERMANY
+de_DE@euro	— German —	GERMANY
+de_LU	— German —	LUXEMBOURG
+de_LU@euro	— German —	LUXEMBOURG
+dv_MV	— Dhivehi —	MALDIVES
+dz_BT	— Dzongkha —	BHUTAN
+el_CY	— Modern Greek (1453-) —	CYPRUS
+el_GR	— Modern Greek (1453-) —	GREECE
+en_AG	— English —	ANTIGUA AND BARBUDA
+en_AU	— English —	AUSTRALIA
+en_BW	— English —	BOTSWANA
+en_CA	— English —	CANADA
+en_DK	— English —	DENMARK
+en_GB	— English —	UNITED KINGDOM
+en_HK	— English —	HONG KONG
+en_IE	— English —	IRELAND
+en_IE@euro	— English —	IRELAND
+en_IN	— English —	INDIA
+en_NG	— English —	NIGERIA
+en_NZ	— English —	NEW ZEALAND
+en_PH	— English —	PHILIPPINES
+en_SG	— English —	SINGAPORE
+en_US	— English —	UNITED STATES
+en_ZA	— English —	SOUTH AFRICA
+en_ZM	— English —	ZAMBIA
+en_ZW	— English —	ZIMBABWE
+es_AR	— Spanish —	ARGENTINA
+es_BO	— Spanish —	BOLIVIA, PLURINATIONAL STATE OF
+es_CL	— Spanish —	CHILE
+es_CO	— Spanish —	COLOMBIA
+es_CR	— Spanish —	COSTA RICA
+es_DO	— Spanish —	DOMINICAN REPUBLIC
+es_EC	— Spanish —	ECUADOR
+es_ES	— Spanish —	SPAIN
+es_ES@euro	— Spanish —	SPAIN
+es_GT	— Spanish —	GUATEMALA
+es_HN	— Spanish —	HONDURAS
+es_MX	— Spanish —	MEXICO
+es_NI	— Spanish —	NICARAGUA
+es_PA	— Spanish —	PANAMA
+es_PE	— Spanish —	PERU
+es_PR	— Spanish —	PUERTO RICO
+es_PY	— Spanish —	PARAGUAY
+es_SV	— Spanish —	EL SALVADOR
+es_US	— Spanish —	UNITED STATES
+es_UY	— Spanish —	URUGUAY
+es_VE	— Spanish —	VENEZUELA, BOLIVARIAN REPUBLIC OF
+et_EE	— Estonian —	ESTONIA
+eu_ES	— Basque —	SPAIN
+eu_ES@euro	— Basque —	SPAIN
+fa_IR	— Persian —	IRAN, ISLAMIC REPUBLIC OF
+ff_SN	— Fulah —	SENEGAL
+fil_PH	— Filipino —	PHILIPPINES
+fi_FI	— Finnish —	FINLAND
+fi_FI@euro	— Finnish —	FINLAND
+fo_FO	— Faroese —	FAROE ISLANDS
+fr_BE	— French —	BELGIUM
+fr_BE@euro	— French —	BELGIUM
+fr_CA	— French —	CANADA
+fr_CH	— French —	SWITZERLAND
+fr_FR	— French —	FRANCE
+fr_FR@euro	— French —	FRANCE
+fr_LU	— French —	LUXEMBOURG
+fr_LU@euro	— French —	LUXEMBOURG
+fur_IT	— Friulian —	ITALY
+fy_DE	— Western Frisian —	GERMANY
+fy_NL	— Western Frisian —	NETHERLANDS
+ga_IE	— Irish —	IRELAND
+ga_IE@euro	— Irish —	IRELAND
+gd_GB	— Scottish Gaelic —	UNITED KINGDOM
+gez_ER	— Geez —	ERITREA
+gez_ER@abegede	— Geez —	ERITREA
+gez_ET	— Geez —	ETHIOPIA
+gez_ET@abegede	— Geez —	ETHIOPIA
+gl_ES	— Galician —	SPAIN
+gl_ES@euro	— Galician —	SPAIN
+gu_IN	— Gujarati —	INDIA
+gv_GB	— Manx —	UNITED KINGDOM
+ha_NG	— Hausa —	NIGERIA
+he_IL	— Hebrew —	ISRAEL
+hi_IN	— Hindi —	INDIA
+hne_IN	— Chhattisgarhi —	INDIA
+hr_HR	— Croatian —	CROATIA
+hsb_DE	— Upper Sorbian —	GERMANY
+ht_HT	— Haitian —	HAITI
+hus_MX	— Huastec —	MEXICO
+hu_HU	— Hungarian —	HUNGARY
+hy_AM	— Armenian —	ARMENIA
+id_ID	— Indonesian —	INDONESIA
+ig_NG	— Igbo —	NIGERIA
+ik_CA	— Inupiaq —	CANADA
+is_IS	— Icelandic —	ICELAND
+it_CH	— Italian —	SWITZERLAND
+it_IT	— Italian —	ITALY
+it_IT@euro	— Italian —	ITALY
+iu_CA	— Inuktitut —	CANADA
+ja_JP	— Japanese —	JAPAN
+ka_GE	— Georgian —	GEORGIA
+kk_KZ	— Kazakh —	KAZAKHSTAN
+kl_GL	— Kalaallisut —	GREENLAND
+km_KH	— Central Khmer —	CAMBODIA
+kn_IN	— Kannada —	INDIA
+kok_IN	— Konkani (macrolanguage) —	INDIA
+ko_KR	— Korean —	KOREA, REPUBLIC OF
+ks_IN	— Kashmiri —	INDIA
+ks_IN@devanagari	— Kashmiri —	INDIA
+ku_TR	— Kurdish —	TURKEY
+kw_GB	— Cornish —	UNITED KINGDOM
+ky_KG	— Kirghiz —	KYRGYZSTAN
+lb_LU	— Luxembourgish —	LUXEMBOURG
+lg_UG	— Ganda —	UGANDA
+lij_IT	— Ligurian —	ITALY
+li_BE	— Limburgan —	BELGIUM
+li_NL	— Limburgan —	NETHERLANDS
+lo_LA	— Lao —	LAO PEOPLE'S DEMOCRATIC REPUBLIC
+lt_LT	— Lithuanian —	LITHUANIA
+lv_LV	— Latvian —	LATVIA
+mai_IN	— Maithili —	INDIA
+mg_MG	— Malagasy —	MADAGASCAR
+mhr_RU	— Eastern Mari —	RUSSIAN FEDERATION
+miq_NI	— Mískito —	NICARAGUA
+mi_NZ	— Maori —	NEW ZEALAND
+mk_MK	— Macedonian —	MACEDONIA, THE FORMER YUGOSLAV REPUBLIC OF
+ml_IN	— Malayalam —	INDIA
+mn_MN	— Mongolian —	MONGOLIA
+mr_IN	— Marathi —	INDIA
+ms_MY	— Malay (macrolanguage) —	MALAYSIA
+mt_MT	— Maltese —	MALTA
+myv_RU	— Erzya —	RUSSIAN FEDERATION
+myv_RU@cyrillic	— Erzya —	RUSSIAN FEDERATION
+my_MM	— Burmese —	MYANMAR
+nah_MX	— Nahuatl languages —	MEXICO
+nan_TW@latin	— Min Nan Chinese —	TAIWAN, PROVINCE OF CHINA
+nb_NO	— Norwegian Bokmål —	NORWAY
+nds_DE	— Low German —	GERMANY
+nds_NL	— Low German —	NETHERLANDS
+ne_NP	— Nepali —	NEPAL
+nl_AW	— Dutch —	ARUBA
+nl_BE	— Dutch —	BELGIUM
+nl_BE@euro	— Dutch —	BELGIUM
+nl_NL	— Dutch —	NETHERLANDS
+nl_NL@euro	— Dutch —	NETHERLANDS
+nn_NO	— Norwegian Nynorsk —	NORWAY
+nr_ZA	— South Ndebele —	SOUTH AFRICA
+nso_ZA	— Pedi —	SOUTH AFRICA
+oc_FR	— Occitan (post 1500) —	FRANCE
+om_ET	— Oromo —	ETHIOPIA
+om_KE	— Oromo —	KENYA
+or_IN	— Oriya —	INDIA
+os_RU	— Ossetian —	RUSSIAN FEDERATION
+pap_AN	— Papiamento —	NETHERLANDS ANTILLES
+pa_IN	— Panjabi —	INDIA
+pa_PK	— Panjabi —	PAKISTAN
+pl_PL	— Polish —	POLAND
+ps_AF	— Pushto —	AFGHANISTAN
+pt_BR	— Portuguese —	BRAZIL
+pt_PT	— Portuguese —	PORTUGAL
+pt_PT@euro	— Portuguese —	PORTUGAL
+quy_PE	— Ayacucho Quechua —	PERU
+quz_PE	— Cusco Quechua —	PERU
+ro_RO	— Romanian —	ROMANIA
+ru_RU	— Russian —	RUSSIAN FEDERATION
+ru_UA	— Russian —	UKRAINE
+rw_RW	— Kinyarwanda —	RWANDA
+sa_IN	— Sanskrit —	INDIA
+sc_IT	— Sardinian —	ITALY
+sd_IN	— Sindhi —	INDIA
+sd_IN@devanagari	— Sindhi —	INDIA
+se_NO	— Northern Sami —	NORWAY
+shs_CA	— Shuswap —	CANADA
+sid_ET	— Sidamo —	ETHIOPIA
+si_LK	— Sinhala —	SRI LANKA
+sk_SK	— Slovak —	SLOVAKIA
+sl_SI	— Slovenian —	SLOVENIA
+so_DJ	— Somali —	DJIBOUTI
+so_ET	— Somali —	ETHIOPIA
+so_KE	— Somali —	KENYA
+so_SO	— Somali —	SOMALIA
+sq_AL	— Albanian —	ALBANIA
+sq_KV	— Albanian —	KOSOVO
+sq_MK	— Albanian —	MACEDONIA, THE FORMER YUGOSLAV REPUBLIC OF
+sr_ME	— Serbian —	MONTENEGRO
+sr_RS	— Serbian —	SERBIA
+sr_RS@latin	— Serbian —	SERBIA
+ss_ZA	— Swati —	SOUTH AFRICA
+st_ZA	— Southern Sotho —	SOUTH AFRICA
+sv_FI	— Swedish —	FINLAND
+sv_FI@euro	— Swedish —	FINLAND
+sv_SE	— Swedish —	SWEDEN
+sw_KE	— Swahili (macrolanguage) —	KENYA
+sw_TZ	— Swahili (macrolanguage) —	TANZANIA, UNITED REPUBLIC OF
+ta_IN	— Tamil —	INDIA
+ta_LK	— Tamil —	SRI LANKA
+te_IN	— Telugu —	INDIA
+tg_TJ	— Tajik —	TAJIKISTAN
+th_TH	— Thai —	THAILAND
+tig_ER	— Tigre —	ERITREA
+ti_ER	— Tigrinya —	ERITREA
+ti_ET	— Tigrinya —	ETHIOPIA
+tk_TM	— Turkmen —	TURKMENISTAN
+tl_PH	— Tagalog —	PHILIPPINES
+tn_ZA	— Tswana —	SOUTH AFRICA
+tr_CY	— Turkish —	CYPRUS
+tr_TR	— Turkish —	TURKEY
+ts_ZA	— Tsonga —	SOUTH AFRICA
+tt_RU	— Tatar —	RUSSIAN FEDERATION
+tt_RU@iqtelif	— Tatar —	RUSSIAN FEDERATION
+ug_CN	— Uighur —	CHINA
+uk_UA	— Ukrainian —	UKRAINE
+ur_IN	— Urdu —	INDIA
+ur_PK	— Urdu —	PAKISTAN
+uz_UZ	— Uzbek —	UZBEKISTAN
+uz_UZ@cyrillic	— Uzbek —	UZBEKISTAN
+ve_ZA	— Venda —	SOUTH AFRICA
+vi_VN	— Vietnamese —	VIET NAM
+wae_CH	— Walser —	SWITZERLAND
+wal_ET	— Wolaytta —	ETHIOPIA
+wa_BE	— Walloon —	BELGIUM
+wa_BE@euro	— Walloon —	BELGIUM
+wo_SN	— Wolof —	SENEGAL
+xh_ZA	— Xhosa —	SOUTH AFRICA
+yi_US	— Yiddish —	UNITED STATES
+yo_NG	— Yoruba —	NIGERIA
+yue_HK	— Yue Chinese —	HONG KONG
+zh_CN	— Chinese —	CHINA
+zh_HK	— Chinese —	HONG KONG
+zh_SG	— Chinese —	SINGAPORE
+zh_TW	— Chinese —	TAIWAN, PROVINCE OF CHINA
+zu_ZA	— Zulu —	SOUTH AFRICA
+
