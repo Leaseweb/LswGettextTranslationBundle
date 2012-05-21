@@ -85,7 +85,7 @@ abstract class AbstractCommand extends ContainerAwareCommand
         if (!file_put_contents($path, $php)) {
             throw new \Exception('Cannot write intermediate PHP code for twig templates to twig.cache.php in: '.$path);
         }
-        echo $path; echo file_exists($path);
+        
         return $results;
     }
     

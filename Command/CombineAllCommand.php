@@ -37,6 +37,7 @@ class CombineAllCommand extends AbstractCommand
             ->setDescription('Combines translations from all bundles and the application for specific languages')
             ->setDefinition(array(
                 new InputArgument('languages', InputArgument::REQUIRED, 'The language list'),
+                new InputOption('keep-messages', null, InputOption::VALUE_NONE, 'Do not delete the intermediate messages.po file'),
             ))
             ->setHelp(<<<EOT
 The <info>gettext:combine</info> command combines translations from all 
@@ -49,6 +50,10 @@ This interactive shell will ask you for a language list.
 You can alternatively specify the comma-separated language list as the first argument:
 
   <info>php app/console gettext:combine en_US,nl_NL,de_DE</info>
+
+You can keep the intermediate messages.po file by specifying the keep-messages flag:
+
+  <info>php app/console gettext:combine en_US,nl_NL,de_DE --keep-messages</info>
 
 EOT
             );
@@ -87,6 +92,10 @@ EOT
             $results = $this->compile($file,$path);
             foreach ($results as $filename => $status) {
               $output->writeln("$status: $filename");
+            }
+            
+            if (!$input->getOption('keep-messages')) {
+                unlink($file);
             }
         }
         

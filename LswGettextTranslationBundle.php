@@ -20,6 +20,7 @@ namespace
 
   // bind the default domain to the combined translations
   bindtextdomain('messages','../app/Resources/gettext/combined');
+  bind_textdomain_codeset('messages', 'UTF-8');
 }
 
 
