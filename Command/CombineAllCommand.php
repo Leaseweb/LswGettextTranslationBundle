@@ -38,6 +38,7 @@ class CombineAllCommand extends AbstractCommand
             ->setDefinition(array(
                 new InputArgument('languages', InputArgument::REQUIRED, 'The language list'),
                 new InputOption('keep-messages', null, InputOption::VALUE_NONE, 'Do not delete the intermediate messages.po file'),
+                new InputOption('increase-version', null, InputOption::VALUE_OPTIONAL, 'Increase the version of the mo file', true),
             ))
             ->setHelp(<<<EOT
 The <info>gettext:combine</info> command combines translations from all 
@@ -66,10 +67,13 @@ EOT
     {
         $root = $this->getContainer()->getParameter('kernel.root_dir');
         chdir($root.'/..');
-        
-        $languages = explode(',', trim($input->getArgument('languages'), ','));
-        $bundles   = $this->getContainer()->get('kernel')->getBundles();
-        
+
+        $configFile = $root."/Resources/gettext/version";   
+        $languages  = explode(',', trim($input->getArgument('languages'), ','));
+        $bundles    = $this->getContainer()->get('kernel')->getBundles();
+        $version    = file_exists($configFile) ? file_get_contents($configFile) : "";
+        $newVersion = $input->getOption('increase-version') ? "_" . strtotime("now") : $version;
+
         foreach ($languages as $lang) {
             $lang = trim($lang);
             $files = array();
@@ -82,13 +86,15 @@ EOT
                 $file = $bundleObj->getPath()."/Resources/gettext/locale/$lang/LC_MESSAGES/messages.po";
                 if (file_exists($file)) $files[] = $file;
             }
-            $path = "$root/Resources/gettext/combined/$lang/LC_MESSAGES/messages.po";
+
+            $path = "$root/Resources/gettext/combined/$lang/LC_MESSAGES/messages$newVersion.po";
             $results = $this->combineFiles($files,$path);
             foreach ($results as $filename => $status) {
                 $output->writeln("$status: $filename");
             }
+            
             $file = $path;
-            $path = "$root/Resources/gettext/combined/$lang/LC_MESSAGES/messages.mo";
+            $path = "$root/Resources/gettext/combined/$lang/LC_MESSAGES/messages$newVersion.mo";
             $results = $this->compile($file,$path);
             foreach ($results as $filename => $status) {
               $output->writeln("$status: $filename");
@@ -97,6 +103,20 @@ EOT
             if (!$input->getOption('keep-messages')) {
                 unlink($file);
             }
+
+            if ($version != $newVersion) {
+                if (!file_put_contents($configFile, $newVersion)) {
+                    $output->writeln("Version was not saved: " . $newVersion);
+                }
+
+                if (file_exists("$root/Resources/gettext/combined/$lang/LC_MESSAGES/messages$version.po")) {
+                    unlink("$root/Resources/gettext/combined/$lang/LC_MESSAGES/messages$version.po");
+                }
+                if (file_exists("$root/Resources/gettext/combined/$lang/LC_MESSAGES/messages$version.mo")) {
+                    unlink("$root/Resources/gettext/combined/$lang/LC_MESSAGES/messages$version.mo");
+                }
+            }
+
         }
         
         //http://www.gnu.org/software/gettext/manual/html_node/xgettext-Invocation.html

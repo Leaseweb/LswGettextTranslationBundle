@@ -17,12 +17,7 @@ namespace
   {
     return call_user_func_array('Lsw\GettextTranslationBundle\Extension\GettextTranslationExtension::ngettext', func_get_args());
   }
-
-  // bind the default domain to the combined translations
-  bindtextdomain('messages','../app/Resources/gettext/combined');
-  bind_textdomain_codeset('messages', 'UTF-8');
 }
-
 
 namespace Lsw\GettextTranslationBundle
 {

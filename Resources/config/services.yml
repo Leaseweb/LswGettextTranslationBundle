@@ -10,6 +10,6 @@ services:
       - { name: twig.extension }
   lsw_gettext_locale_listener:
     class: %lsw_gettext_locale_listener.class%
-    arguments: [%gettext.locale_shortcuts%,@router]
+    arguments: [%gettext.locale_shortcuts%,@router, %kernel.root_dir%]
     tags:
       - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
