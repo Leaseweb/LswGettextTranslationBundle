@@ -84,14 +84,14 @@ Lsw/GettextTranslationBundle/Resources/config/config.yml
 
 Usage is broken down in the following steps:
 
-0. Use gettext (convenience) functions in your code
-1. Extract the strings from a bundle that need to translated by gettext (.pot file)
-2. (First time only) Initialize the languages you want to support in the bundle (.po file)
-3. (Skip first time) Update the language (.po) files with the new gettext template (.pot) file
-4. Translate the language files using the excellent [Poedit](http://www.poedit.net/) application
-5. Combine all translations into one file (.mo file)
+1. Use gettext (convenience) functions in your code
+2. Extract the strings from a bundle that need to translated by gettext (.pot file)
+3. (First time only) Initialize the languages you want to support in the bundle (.po file)
+4. (Skip first time) Update the language (.po) files with the new gettext template (.pot) file
+5. Translate the language files using the excellent [Poedit](http://www.poedit.net/) application
+6. Combine all translations into one file (.mo file)
 
-### Step 0: Use gettext (convenience) functions in your code
+### Step 1: Use gettext (convenience) functions in your code
 
 You can use the following functions:
 
@@ -100,29 +100,29 @@ You can use the following functions:
 * `__($format,$args,...)` Shortcut for `sprintf(_($format),$args,...))`
 * `__n($formatSingular,$formatPlural,$n,$args,...)` Shortcut for `sprintf(_n($formatSingular,$formatPlural,$n),$args,...))`
 
-### Step 1: Extract the strings from a bundle
+### Step 2: Extract the strings from a bundle
 
 Use the `./app/console gettext:bundle:extract` command to search a bundle for translation
 strings and to store them into a gettext template (.pot) file.
 
-### Step 2: (First time only) Initialize the languages you want to support
+### Step 3: (First time only) Initialize the languages you want to support
 
 Use the `./app/console gettext:bundle:initialize` command to copy the gettext template (.pot) 
 file into the language specific (.po) files.
 
-### Step 3: (Skip first time) Update the gettext language (.po) files with the template
+### Step 4: (Skip first time) Update the gettext language (.po) files with the template
 
 Use the [Poedit](http://www.poedit.net/) application to load a gettext language (.po) file. Choose the 
 "Update from template" option and point Poedit to the generated gettext template (.pot) file. Review 
 and confirm the changes.
 
-### Step 4: Translate the language files using the excellent [Poedit](http://www.poedit.net/) application
+### Step 5: Translate the language files using the excellent [Poedit](http://www.poedit.net/) application
 
 Use the [Poedit](http://www.poedit.net/) application to load a gettext language (.po) file.
 Translate all missing strings (shown in blue) and check and correct all fuzzy translated strings
 (shown in yellow).
 
-### Step 5: Combine all translation
+### Step 6: Combine all translation
 
 Use the `./app/console gettext:combine` command combine all gettext language (.po) files into one
 compiled gettext (.mo) file.
