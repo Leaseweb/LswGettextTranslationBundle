@@ -84,11 +84,21 @@ Lsw/GettextTranslationBundle/Resources/config/config.yml
 
 Usage is broken down in the following steps:
 
+0. Use gettext (convenience) functions in your code
 1. Extract the strings from a bundle that need to translated by gettext (.pot file)
 2. (First time only) Initialize the languages you want to support in the bundle (.po file)
 3. (Skip first time) Update the language (.po) files with the new gettext template (.pot) file
 4. Translate the language files using the excellent [Poedit](http://www.poedit.net/) application
 5. Combine all translations into one file (.mo file)
+
+### Step 0: Use gettext (convenience) functions in your code
+
+You can use the following functions:
+
+* `_($text)` Shortcut for [gettext](http://php.net/manual/en/function.gettext.php)
+* `_n($textSingular,$textPlural,$n)` Shortcut for [ngettext](http://php.net/manual/en/function.ngettext.php)
+* `__($format,$args,...)` Shortcut for sprintf(_($format),$args,...))
+* `__n($formatSingular,$formatPlural,$n,$args,...)` Shortcut for sprintf(_n($formatSingular,$formatPlural,$n),$args,...))
 
 ### Step 1: Extract the strings from a bundle
 
