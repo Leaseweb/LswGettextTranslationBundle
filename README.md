@@ -97,8 +97,8 @@ You can use the following functions:
 
 * `_($text)` Shortcut for [gettext](http://php.net/manual/en/function.gettext.php)
 * `_n($textSingular,$textPlural,$n)` Shortcut for [ngettext](http://php.net/manual/en/function.ngettext.php)
-* `__($format,$args,...)` Shortcut for sprintf(_($format),$args,...))
-* `__n($formatSingular,$formatPlural,$n,$args,...)` Shortcut for sprintf(_n($formatSingular,$formatPlural,$n),$args,...))
+* `__($format,$args,...)` Shortcut for `sprintf(_($format),$args,...))`
+* `__n($formatSingular,$formatPlural,$n,$args,...)` Shortcut for `sprintf(_n($formatSingular,$formatPlural,$n),$args,...))`
 
 ### Step 1: Extract the strings from a bundle
 
