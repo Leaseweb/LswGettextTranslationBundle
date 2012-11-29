@@ -1,4 +1,12 @@
 <?php
+/*
+ * This file is part of the LswGettextTranslationBundle package.
+ *
+ * (c) LswGettextTranslationBundle <http://leaseweb.com/>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Lsw\GettextTranslationBundle\Command;
 
@@ -79,7 +87,7 @@ EOT
             }
 
             $path = "$root/Resources/gettext/combined/$lang/LC_MESSAGES/messages$newVersion.po";
-            $results = $this->combineFiles($files,$path);
+            $results = $this->combineFiles($files, $path);
             foreach ($results as $filename => $status) {
                 $output->writeln("$status: $filename");
             }
