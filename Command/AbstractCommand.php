@@ -7,6 +7,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+use Symfony\Component\Process\Process;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
@@ -94,22 +95,15 @@ abstract class AbstractCommand extends ContainerAwareCommand
             '-f -',
             "-o \"$path.tmp\"",
         ));
-        $descriptors = array(
-            0 => array("pipe", "r"),  // stdin
-            1 => array("pipe", "w"),  // stdout
-            2 => array("pipe", "w"),  // stderr
-        );
-        $process = proc_open('xgettext '.$options, $descriptors, $pipes);
-        if (is_resource($process)) {
-          fwrite($pipes[0],implode("\n", $files));
-          fclose($pipes[0]);
-          stream_get_contents($pipes[1]);
-          $output = stream_get_contents($pipes[2]);
-          $return = proc_close($process);
-        }
-        if ($return!=0 && $output) {
-          throw new \Exception($output);
-        }
+
+        $process = new Process('xgettext '.$options);
+        $process->setStdin(implode("\n", $files));
+        $process->run();
+		$output = $process->getOutput();
+
+        if (!$process->isSuccessful())
+        	throw new \Exception($output);
+
         if ($output) echo "Warning: $output\n";
         if (!file_exists("$path.tmp")) {
             throw new \Exception('xgettext failed extracting messages for translating. Did you install gettext?');
@@ -167,22 +161,15 @@ abstract class AbstractCommand extends ContainerAwareCommand
             '-f -',
             "-o $path.tmp",
         ));
-        $descriptors = array(
-            0 => array("pipe", "r"),  // stdin
-            1 => array("pipe", "w"),  // stdout
-            2 => array("pipe", "w"),  // stderr
-        );
-        $process = proc_open('msgcat '.$options, $descriptors, $pipes);
-        if (is_resource($process)) {
-          fwrite($pipes[0],implode("\n", $files));
-          fclose($pipes[0]);
-          stream_get_contents($pipes[1]);
-          $output = stream_get_contents($pipes[2]);
-          $return = proc_close($process);
-        }
-        if ($return!=0 && $output) {
-          throw new \Exception($output);
-        }
+
+        $process = new Process('msgcat '.$options);
+        $process->setStdin(implode("\n", $files));
+        $process->run();
+		$output = $process->getOutput();
+
+        if (!$process->isSuccessful())
+        	throw new \Exception($output);
+
         if (!file_exists("$path.tmp")) {
             throw new \Exception('msgcat failed concatenating messages for translating. Did you install gettext?');
         }
@@ -205,20 +192,14 @@ abstract class AbstractCommand extends ContainerAwareCommand
             "-o $path.tmp",
             $file,
         ));
-        $descriptors = array(
-            0 => array("pipe", "r"),  // stdin
-            1 => array("pipe", "w"),  // stdout
-            2 => array("pipe", "w"),  // stderr
-        );
-        $process = proc_open('msgfmt '.$options, $descriptors, $pipes);
-        if (is_resource($process)) {
-          stream_get_contents($pipes[1]);
-          $output = stream_get_contents($pipes[2]);
-          $return = proc_close($process);
-        }
-        if ($return!=0 && $output) {
-          throw new \Exception($output);
-        }
+
+        $process = new Process('msgfmt '.$options);
+        $process->run();
+        $output = $process->getOutput();
+
+        if (!$process->isSuccessful())
+        	throw new \Exception($output);
+
         if (!file_exists("$path.tmp")) {
           throw new \Exception('msgfmt failed to compile messages for translating. Did you install gettext?');
         }
