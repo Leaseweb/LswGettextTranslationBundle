@@ -7,6 +7,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+use Symfony\Component\Process\Process;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
@@ -30,19 +31,6 @@ abstract class AbstractCommand extends ContainerAwareCommand
         return $templates;
     }
 
-    private function relativePath($from, $to, $ps = DIRECTORY_SEPARATOR)
-    {
-        $from = realpath($from);
-        $to = realpath($to);
-        $arFrom = explode($ps, rtrim($from, $ps));
-        $arTo = explode($ps, rtrim($to, $ps));
-        while(count($arFrom) && count($arTo) && ($arFrom[0] == $arTo[0])) {
-            array_shift($arFrom);
-            array_shift($arTo);
-        }
-        return str_pad("", count($arFrom) * 3, '..'.$ps).implode($ps, $arTo);
-    }
-    
     protected function relative($to)
     { 
         return $this->relativePath('.', $to);
@@ -51,13 +39,15 @@ abstract class AbstractCommand extends ContainerAwareCommand
     protected function convertTwigToPhp($path, $name)
     {
         $results = array();
-        
-        if (!file_exists(dirname($path))) {
-          mkdir(dirname($path), 0755, true);
+
+        $dir = dirname($path);
+
+        if (!file_exists($dir)) {
+          mkdir($dir, 0755, true);
         }
-        
-        $templates = $this->findFilesInFolder(dirname($path) . '/../views', 'twig');
-               
+
+        $templates = $this->findFilesInFolder($dir . '/../views', 'twig');
+
         $php  = "<?php\n";
         $twig = $this->getContainer()->get('twig');
         $twig->setLoader(new \Twig_Loader_String());
@@ -65,9 +55,10 @@ abstract class AbstractCommand extends ContainerAwareCommand
             $stream = $twig->tokenize(file_get_contents($templateFileName));
             $nodes = $twig->parse($stream);
             $template = $twig->compile($nodes);
-            $template = explode("\n",$template);
-            array_shift($template);
-            $template = implode("\n",$template);
+
+            // remove first line
+            $template = substr($template, strpos($template, "\n")+strlen("\n"));
+
             $php .= "/*\n * Resource: $name\n * File: $templateFileName\n */\n";
             $php .= $template;
             $results[$templateFileName]='Scanned';
@@ -83,16 +74,17 @@ abstract class AbstractCommand extends ContainerAwareCommand
     protected function extractFromPhp($path)
     {
         $results = array();
-        
-        if (!file_exists(dirname($path))) {
-            mkdir(dirname($path), 0755, true);
-        }
-        if (file_exists("$path.tmp"))  {
+
+        $dir = dirname($path);
+
+        if (!file_exists($dir)) {
+            mkdir($dir, 0755, true);
+        } else if (file_exists("$path.tmp"))  {
             unlink("$path.tmp");
         }
-        
-        $files = $this->findFilesInFolder(dirname($path) . '/../..', 'php');
-        
+
+        $files = $this->findFilesInFolder($dir . '/../..', 'php');
+
         $options = implode(' ',array(
             '--keyword=__:1',
             '--keyword=__n:1,2',
@@ -104,28 +96,23 @@ abstract class AbstractCommand extends ContainerAwareCommand
             '-f -',
             "-o \"$path.tmp\"",
         ));
-        $descriptors = array(
-            0 => array("pipe", "r"),  // stdin
-            1 => array("pipe", "w"),  // stdout
-            2 => array("pipe", "w"),  // stderr
-        );
-        $process = proc_open('xgettext '.$options, $descriptors, $pipes);
-        if (is_resource($process)) {
-          fwrite($pipes[0],implode("\n", $files));
-          fclose($pipes[0]);
-          stream_get_contents($pipes[1]);
-          $output = stream_get_contents($pipes[2]);
-          $return = proc_close($process);
-        }
-        if ($return!=0 && $output) {
-          throw new \Exception($output);
-        }
+
+        $process = new Process('xgettext '.$options);
+        $process->setStdin(implode("\n", $files));
+        $process->run();
+		$output = $process->getOutput();
+
+        if (!$process->isSuccessful())
+        	throw new \Exception($output);
+
         if ($output) echo "Warning: $output\n";
         if (!file_exists("$path.tmp")) {
             throw new \Exception('xgettext failed extracting messages for translating. Did you install gettext?');
             // tell about windows: http://www.gtk.org/download/win32.php
         }
         rename("$path.tmp", $path);
+
+        $results = array();
         foreach ($files as $filename) $results[$filename] = 'Scanned';
         $results[$this->relative($path)]='Written';
         return $results;
@@ -166,8 +153,7 @@ abstract class AbstractCommand extends ContainerAwareCommand
         $results = array();
         if (!file_exists(dirname($path))) {
             mkdir(dirname($path), 0755, true);
-        }
-        if (file_exists("$path.tmp")) {
+        } else if (file_exists("$path.tmp")) {
             unlink("$path.tmp");
         }
         $options = implode(' ',array(
@@ -176,26 +162,21 @@ abstract class AbstractCommand extends ContainerAwareCommand
             '-f -',
             "-o $path.tmp",
         ));
-        $descriptors = array(
-            0 => array("pipe", "r"),  // stdin
-            1 => array("pipe", "w"),  // stdout
-            2 => array("pipe", "w"),  // stderr
-        );
-        $process = proc_open('msgcat '.$options, $descriptors, $pipes);
-        if (is_resource($process)) {
-          fwrite($pipes[0],implode("\n", $files));
-          fclose($pipes[0]);
-          stream_get_contents($pipes[1]);
-          $output = stream_get_contents($pipes[2]);
-          $return = proc_close($process);
-        }
-        if ($return!=0 && $output) {
-          throw new \Exception($output);
-        }
+
+        $process = new Process('msgcat '.$options);
+        $process->setStdin(implode("\n", $files));
+        $process->run();
+		$output = $process->getOutput();
+
+        if (!$process->isSuccessful())
+        	throw new \Exception($output);
+
         if (!file_exists("$path.tmp")) {
             throw new \Exception('msgcat failed concatenating messages for translating. Did you install gettext?');
         }
         rename("$path.tmp", $path);
+
+        $results = array();
         foreach ($files as $filename) $results[$filename] = 'Scanned';
         $results[$this->relative($path)]='Written';
         return $results;
@@ -212,20 +193,14 @@ abstract class AbstractCommand extends ContainerAwareCommand
             "-o $path.tmp",
             $file,
         ));
-        $descriptors = array(
-            0 => array("pipe", "r"),  // stdin
-            1 => array("pipe", "w"),  // stdout
-            2 => array("pipe", "w"),  // stderr
-        );
-        $process = proc_open('msgfmt '.$options, $descriptors, $pipes);
-        if (is_resource($process)) {
-          stream_get_contents($pipes[1]);
-          $output = stream_get_contents($pipes[2]);
-          $return = proc_close($process);
-        }
-        if ($return!=0 && $output) {
-          throw new \Exception($output);
-        }
+
+        $process = new Process('msgfmt '.$options);
+        $process->run();
+        $output = $process->getOutput();
+
+        if (!$process->isSuccessful())
+        	throw new \Exception($output);
+
         if (!file_exists("$path.tmp")) {
           throw new \Exception('msgfmt failed to compile messages for translating. Did you install gettext?');
         }
@@ -234,5 +209,25 @@ abstract class AbstractCommand extends ContainerAwareCommand
         $results[$this->relative($path)]='Written';
         return $results;
     }
-    
+
+    // FIXME: share this code with Symfony (File::getRelativePath(Dir))
+    private function relativePath($from, $to, $ps = DIRECTORY_SEPARATOR)
+    {
+        $from = realpath($from);
+        $to = realpath($to);
+
+        $equalOffset = 0;
+        $minLength = min(strlen($from), strlen($to));
+
+        while ($equalOffset < $minLength && $from[$equalOffset] == $to[$equalOffset])
+            $equalOffset++;
+
+        $backCount =
+            $equalOffset == $minLength && strlen($from) < strlen($to)
+                ? 0
+                : substr_count($from, $ps, $equalOffset-1);
+
+        return rtrim(str_repeat('..'.$ps, $backCount).ltrim(substr($to, $equalOffset), $ps), $ps);
+    }
+
 }
