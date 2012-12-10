@@ -30,19 +30,6 @@ abstract class AbstractCommand extends ContainerAwareCommand
         return $templates;
     }
 
-    private function relativePath($from, $to, $ps = DIRECTORY_SEPARATOR)
-    {
-        $from = realpath($from);
-        $to = realpath($to);
-        $arFrom = explode($ps, rtrim($from, $ps));
-        $arTo = explode($ps, rtrim($to, $ps));
-        while(count($arFrom) && count($arTo) && ($arFrom[0] == $arTo[0])) {
-            array_shift($arFrom);
-            array_shift($arTo);
-        }
-        return str_pad("", count($arFrom) * 3, '..'.$ps).implode($ps, $arTo);
-    }
-    
     protected function relative($to)
     { 
         return $this->relativePath('.', $to);
@@ -240,5 +227,25 @@ abstract class AbstractCommand extends ContainerAwareCommand
         $results[$this->relative($path)]='Written';
         return $results;
     }
-    
+
+    // FIXME: share this code with Symfony (File::getRelativePath(Dir))
+    private function relativePath($from, $to, $ps = DIRECTORY_SEPARATOR)
+    {
+        $from = realpath($from);
+        $to = realpath($to);
+
+        $equalOffset = 0;
+        $minLength = min(strlen($from), strlen($to));
+
+        while ($equalOffset < $minLength && $from[$equalOffset] == $to[$equalOffset])
+            $equalOffset++;
+
+        $backCount =
+            $equalOffset == $minLength && strlen($from) < strlen($to)
+                ? 0
+                : substr_count($from, $ps, $equalOffset-1);
+
+        return rtrim(str_repeat('..'.$ps, $backCount).ltrim(substr($to, $equalOffset), $ps), $ps);
+    }
+
 }
