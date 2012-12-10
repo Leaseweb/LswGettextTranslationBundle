@@ -9,7 +9,13 @@ use Symfony\Component\Routing\Exception\InvalidParameterException;
 class GettextLocaleListener
 {
   private $localeShortcuts;
+
+  /**
+   * @var Symfony\Component\Routing\RouterInterface
+   */
   private $router;
+
+  private $rootDir;
   
   public function __construct($localeShortcuts, RouterInterface $router, $rootDir)
   {

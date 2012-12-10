@@ -7,16 +7,6 @@ use Symfony\Component\DependencyInjection\Container;
 use Doctrine\Common\Util\Inflector;
 
 class GettextTranslationExtension extends \Twig_Extension {
-  
-  private $container;
-  private $generator;
-  
-  public function __construct(UrlGeneratorInterface $generator,Container $container)
-  {
-    $this->generator = $generator;
-    $this->container = $container;
-  }
-  
   public function getFunctions()
   {
     return array(
@@ -26,7 +16,7 @@ class GettextTranslationExtension extends \Twig_Extension {
       '__n' => new \Twig_Function_Method($this, 'ngettext'),
     );
   }
-  
+
   public static function gettext($msgid)
   {
     $args = func_get_args();

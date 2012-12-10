@@ -51,13 +51,15 @@ abstract class AbstractCommand extends ContainerAwareCommand
     protected function convertTwigToPhp($path, $name)
     {
         $results = array();
-        
-        if (!file_exists(dirname($path))) {
-          mkdir(dirname($path), 0755, true);
+
+        $dir = dirname($path);
+
+        if (!file_exists($dir)) {
+          mkdir($dir, 0755, true);
         }
-        
-        $templates = $this->findFilesInFolder(dirname($path) . '/../views', 'twig');
-               
+
+        $templates = $this->findFilesInFolder($dir . '/../views', 'twig');
+
         $php  = "<?php\n";
         $twig = $this->getContainer()->get('twig');
         $twig->setLoader(new \Twig_Loader_String());
@@ -83,16 +85,17 @@ abstract class AbstractCommand extends ContainerAwareCommand
     protected function extractFromPhp($path)
     {
         $results = array();
-        
-        if (!file_exists(dirname($path))) {
-            mkdir(dirname($path), 0755, true);
-        }
-        if (file_exists("$path.tmp"))  {
+
+        $dir = dirname($path);
+
+        if (!file_exists($dir)) {
+            mkdir($dir, 0755, true);
+        } else if (file_exists("$path.tmp"))  {
             unlink("$path.tmp");
         }
-        
-        $files = $this->findFilesInFolder(dirname($path) . '/../..', 'php');
-        
+
+        $files = $this->findFilesInFolder($dir . '/../..', 'php');
+
         $options = implode(' ',array(
             '--keyword=__:1',
             '--keyword=__n:1,2',
@@ -126,6 +129,8 @@ abstract class AbstractCommand extends ContainerAwareCommand
             // tell about windows: http://www.gtk.org/download/win32.php
         }
         rename("$path.tmp", $path);
+
+        $results = array();
         foreach ($files as $filename) $results[$filename] = 'Scanned';
         $results[$this->relative($path)]='Written';
         return $results;
@@ -166,8 +171,7 @@ abstract class AbstractCommand extends ContainerAwareCommand
         $results = array();
         if (!file_exists(dirname($path))) {
             mkdir(dirname($path), 0755, true);
-        }
-        if (file_exists("$path.tmp")) {
+        } else if (file_exists("$path.tmp")) {
             unlink("$path.tmp");
         }
         $options = implode(' ',array(
@@ -196,6 +200,8 @@ abstract class AbstractCommand extends ContainerAwareCommand
             throw new \Exception('msgcat failed concatenating messages for translating. Did you install gettext?');
         }
         rename("$path.tmp", $path);
+
+        $results = array();
         foreach ($files as $filename) $results[$filename] = 'Scanned';
         $results[$this->relative($path)]='Written';
         return $results;
