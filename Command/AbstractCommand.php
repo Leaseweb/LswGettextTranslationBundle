@@ -55,9 +55,10 @@ abstract class AbstractCommand extends ContainerAwareCommand
             $stream = $twig->tokenize(file_get_contents($templateFileName));
             $nodes = $twig->parse($stream);
             $template = $twig->compile($nodes);
-            $template = explode("\n",$template);
-            array_shift($template);
-            $template = implode("\n",$template);
+
+            // remove first line
+            $template = substr($template, strpos($template, "\n")+strlen("\n"));
+
             $php .= "/*\n * Resource: $name\n * File: $templateFileName\n */\n";
             $php .= $template;
             $results[$templateFileName]='Scanned';
