@@ -118,7 +118,7 @@ abstract class AbstractCommand extends ContainerAwareCommand
         $process->run();
         $output = $process->getOutput();
         if (!$process->isSuccessful()) {
-            throw new \Exception($output);
+            throw new \Exception($process->getErrorOutput());
         }
         if ($output) {
             echo "Warning: $output\n";
@@ -191,7 +191,7 @@ abstract class AbstractCommand extends ContainerAwareCommand
         $output = $process->getOutput();
 
         if (!$process->isSuccessful()) {
-            throw new \Exception($output);
+            throw new \Exception($process->getErrorOutput());
         }
 
         if (!file_exists("$path.tmp")) {
@@ -222,7 +222,7 @@ abstract class AbstractCommand extends ContainerAwareCommand
         $process->run();
         $output = $process->getOutput();
         if (!$process->isSuccessful()) {
-            throw new \Exception($output);
+            throw new \Exception($process->getErrorOutput());
         }
 
         if (!file_exists("$path.tmp")) {
