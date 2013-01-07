@@ -13,12 +13,15 @@ use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
 /**
  * ExtractApplicationCommand extracts records to be translated from the current application
+ *
  * @author Maurits van der Schee <m.vanderschee@leaseweb.com>
  * @author Andrii Shchurkov <a.shchurkov@leaseweb.com>
  */
 class CombineAllCommand extends AbstractCommand
 {
     /**
+     * Configure
+     *
      * @see Command
      */
     protected function configure()
@@ -32,13 +35,13 @@ class CombineAllCommand extends AbstractCommand
                 new InputOption('increase-version', null, InputOption::VALUE_OPTIONAL, 'Increase the version of the mo file', true),
             ))
             ->setHelp(<<<EOT
-The <info>gettext:combine</info> command combines translations from all 
+The <info>gettext:combine</info> command combines translations from all
 bundles and the application for specific languages:
 
   <info>php app/console gettext:combine</info>
 
 This interactive shell will ask you for a language list.
-               
+
 You can alternatively specify the comma-separated language list as the first argument:
 
   <info>php app/console gettext:combine en_US,nl_NL,de_DE</info>
@@ -52,6 +55,11 @@ EOT
     }
 
     /**
+     * Execute method get an input texts prepare it for each locale
+     *
+     * @param InputInterface  $input  Input interface
+     * @param OutputInterface $output Output interface
+     *
      * @see Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -59,7 +67,7 @@ EOT
         $root = $this->getContainer()->getParameter('kernel.root_dir');
         chdir($root.'/..');
 
-        $configFile = $root."/Resources/gettext/version";   
+        $configFile = $root."/Resources/gettext/version";
         $languages  = explode(',', trim($input->getArgument('languages'), ','));
         $bundles    = $this->getContainer()->get('kernel')->getBundles();
         $version    = file_exists($configFile) ? file_get_contents($configFile) : "";
@@ -68,29 +76,33 @@ EOT
         foreach ($languages as $lang) {
             $lang = trim($lang);
             $files = array();
-            // add the application translation file as the first file 
+            // add the application translation file as the first file
             // the msgcat --allow-first allows for override of bundle translations
             $file = "$root/Resources/gettext/locale/$lang/LC_MESSAGES/messages.po";
-            if (file_exists($file)) $files[] = $file;
-            // add the bundle translation files 
+            if (file_exists($file)) {
+                $files[] = $file;
+            }
+            // add the bundle translation files
             foreach ($bundles as $bundleObj) {
                 $file = $bundleObj->getPath()."/Resources/gettext/locale/$lang/LC_MESSAGES/messages.po";
-                if (file_exists($file)) $files[] = $file;
+                if (file_exists($file)) {
+                    $files[] = $file;
+                }
             }
 
             $path = "$root/Resources/gettext/combined/$lang/LC_MESSAGES/messages$newVersion.po";
-            $results = $this->combineFiles($files,$path);
+            $results = $this->combineFiles($files, $path);
             foreach ($results as $filename => $status) {
                 $output->writeln("$status: $filename");
             }
-            
+
             $file = $path;
             $path = "$root/Resources/gettext/combined/$lang/LC_MESSAGES/messages$newVersion.mo";
-            $results = $this->compile($file,$path);
+            $results = $this->compile($file, $path);
             foreach ($results as $filename => $status) {
               $output->writeln("$status: $filename");
             }
-            
+
             if (!$input->getOption('keep-messages')) {
                 unlink($file);
             }
@@ -109,15 +121,21 @@ EOT
             }
 
         }
-        
+
         //http://www.gnu.org/software/gettext/manual/html_node/xgettext-Invocation.html
     }
 
     /**
+     * Method returns list of languages
+     *
+     * @param InputInterface  $input  Input interface
+     * @param OutputInterface $output Output interface
+     *
      * @see Command
+     * @return mixed
      */
     protected function interact(InputInterface $input, OutputInterface $output)
-    {     
+    {
         if (!$input->getArgument('languages')) {
             $languages = $this->getHelper('dialog')->askAndValidate(
                 $output,
@@ -127,7 +145,7 @@ EOT
                   if (empty($languages)) {
                     throw new \Exception('Language list can not be empty');
                   }
-          
+
                   return $languages;
                 }
             );

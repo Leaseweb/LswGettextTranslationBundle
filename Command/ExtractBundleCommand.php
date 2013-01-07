@@ -13,12 +13,15 @@ use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
 /**
  * ExtractBundleCommand extracts records to be translated from the specified bundle
+ *
  * @author Maurits van der Schee <m.vanderschee@leaseweb.com>
  * @author Andrii Shchurkov <a.shchurkov@leaseweb.com>
  */
 class ExtractBundleCommand extends AbstractCommand
 {
     /**
+     * Configures extractor
+     *
      * @see Command
      */
     protected function configure()
@@ -40,7 +43,7 @@ This interactive shell will first ask you for a bundle name.
 You can alternatively specify the bundle as the first argument:
 
   <info>php app/console gettext:bundle:extract FOSUserBundle</info>
-  
+
 You can keep the intermediate twig.cache.php file by specifying the keep-cache flag:
 
   <info>php app/console gettext:bundle:extract FOSUserBundle --keep-cache</info>
@@ -50,6 +53,11 @@ EOT
     }
 
     /**
+     * Execute method get an input texts prepare it for each locale
+     *
+     * @param InputInterface  $input  Input interface
+     * @param OutputInterface $output Output interface
+     *
      * @see Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -57,12 +65,12 @@ EOT
         $root = $this->getContainer()->getParameter('kernel.root_dir');
         chdir("$root/..");
         $bundle = $input->getArgument('bundle');
-        $bundle = ltrim($bundle,'@');
+        $bundle = ltrim($bundle, '@');
         $bundleObj = $this->getContainer()->get('kernel')->getBundle($bundle);
         if (!$bundleObj) {
             throw new ResourceNotFoundException("Cannot load bundle resource '$bundle'");
         }
-        
+
         $path = $bundleObj->getPath().'/Resources/gettext/messages.pot';
         $twig = $bundleObj->getPath().'/Resources/gettext/twig.cache.php';
         $results = $this->convertTwigToPhp($twig, $bundle);
@@ -79,7 +87,13 @@ EOT
     }
 
     /**
+     * Method returns list of languages
+     *
+     * @param InputInterface  $input  Input interface
+     * @param OutputInterface $output Output interface
+     *
      * @see Command
+     * @return mixed
      */
     protected function interact(InputInterface $input, OutputInterface $output)
     {

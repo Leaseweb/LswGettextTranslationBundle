@@ -13,12 +13,15 @@ use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
 /**
  * ExtractApplicationCommand extracts records to be translated from the current application
+ *
  * @author Maurits van der Schee <m.vanderschee@leaseweb.com>
  * @author Andrii Shchurkov <a.shchurkov@leaseweb.com>
  */
 class ExtractApplicationCommand extends AbstractCommand
 {
     /**
+     * Configures extractor
+     *
      * @see Command
      */
     protected function configure()
@@ -43,6 +46,11 @@ EOT
     }
 
     /**
+     * Execute method get an input texts prepare it for each locale
+     *
+     * @param InputInterface  $input  Input interface
+     * @param OutputInterface $output Output interface
+     *
      * @see Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -65,7 +73,13 @@ EOT
     }
 
     /**
+     * Method returns list of languages
+     *
+     * @param InputInterface  $input  Input interface
+     * @param OutputInterface $output Output interface
+     *
      * @see Command
+     * @return mixed
      */
     protected function interact(InputInterface $input, OutputInterface $output)
     {

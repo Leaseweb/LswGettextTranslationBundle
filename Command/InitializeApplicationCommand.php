@@ -13,12 +13,15 @@ use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
 /**
  * InitializeBundleCommand extracts records to be translated from the current application
+ *
  * @author Maurits van der Schee <m.vanderschee@leaseweb.com>
  * @author Andrii Shchurkov <a.shchurkov@leaseweb.com>
  */
 class InitializeApplicationCommand extends AbstractCommand
 {
     /**
+     * Configures extractor
+     *
      * @see Command
      */
     protected function configure()
@@ -35,7 +38,7 @@ The <info>gettext:app:initialize</info> command initialize translations for the 
   <info>php app/console gettext:app:initialize</info>
 
 This interactive shell will ask you for a language list.
-               
+
 You can alternatively specify the comma-separated language list as the first argument:
 
   <info>php app/console gettext:app:initialize en_US,nl_NL,de_DE</info>
@@ -45,6 +48,11 @@ EOT
     }
 
     /**
+     * Execute method get an input texts prepare it for each locale
+     *
+     * @param InputInterface  $input  Input interface
+     * @param OutputInterface $output Output interface
+     *
      * @see Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -53,14 +61,20 @@ EOT
         chdir("$root/..");
         $path = "$root/Resources/gettext/messages.pot";
         $languages = $input->getArgument('languages');
-        $results = $this->initializeFromTemplate($path,$languages);
+        $results = $this->initializeFromTemplate($path, $languages);
         foreach ($results as $filename => $status) {
             $output->writeln("$status: $filename");
         }
     }
 
     /**
+     * Method returns list of languages
+     *
+     * @param InputInterface  $input  Input interface
+     * @param OutputInterface $output Output interface
+     *
      * @see Command
+     * @return mixed
      */
     protected function interact(InputInterface $input, OutputInterface $output)
     {
@@ -73,7 +87,7 @@ EOT
                   if (empty($languages)) {
                     throw new \Exception('Language list can not be empty');
                   }
-          
+
                   return $languages;
                 }
             );

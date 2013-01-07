@@ -13,12 +13,15 @@ use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
 /**
  * InitializeBundleCommand extracts records to be translated from the specified bundle
+ *
  * @author Maurits van der Schee <m.vanderschee@leaseweb.com>
  * @author Andrii Shchurkov <a.shchurkov@leaseweb.com>
  */
 class InitializeBundleCommand extends AbstractCommand
 {
     /**
+     * Configures extractor
+     *
      * @see Command
      */
     protected function configure()
@@ -40,9 +43,9 @@ This interactive shell will first ask you for a bundle name.
 You can alternatively specify the bundle as the first argument:
 
   <info>php app/console gettext:bundle:initialize FOSUserBundle</info>
-                
+
 This interactive shell will then ask you for a language list:
-               
+
 You can alternatively specify the comma-separated language list as the second argument:
 
   <info>php app/console gettext:bundle:initialize FOSUserBundle en_US,nl_NL,de_DE</info>
@@ -52,6 +55,11 @@ EOT
     }
 
     /**
+     * Execute method get an input texts prepare it for each locale
+     *
+     * @param InputInterface  $input  Input interface
+     * @param OutputInterface $output Output interface
+     *
      * @see Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -59,21 +67,27 @@ EOT
         $root = $this->getContainer()->getParameter('kernel.root_dir');
         chdir("$root/..");
         $bundle = $input->getArgument('bundle');
-        $bundle = ltrim($bundle,'@');
+        $bundle = ltrim($bundle, '@');
         $bundleObj = $this->getContainer()->get('kernel')->getBundle($bundle);
         if (!$bundleObj) {
             throw new ResourceNotFoundException("Cannot load bundle resource '$bundle'");
         }
         $path = $bundleObj->getPath().'/Resources/gettext/messages.pot';
         $languages = $input->getArgument('languages');
-        $results = $this->initializeFromTemplate($path,$languages);
-        foreach ($results as $filename => $status) { 
+        $results = $this->initializeFromTemplate($path, $languages);
+        foreach ($results as $filename => $status) {
             $output->writeln("$status: $filename");
         }
     }
 
     /**
+     * Method returns list of languages
+     *
+     * @param InputInterface  $input  Input interface
+     * @param OutputInterface $output Output interface
+     *
      * @see Command
+     * @return mixed
      */
     protected function interact(InputInterface $input, OutputInterface $output)
     {
@@ -92,7 +106,7 @@ EOT
             );
             $input->setArgument('bundle', $bundle);
         }
-        
+
         if (!$input->getArgument('languages')) {
             $languages = $this->getHelper('dialog')->askAndValidate(
                 $output,
@@ -102,7 +116,7 @@ EOT
                   if (empty($languages)) {
                     throw new \Exception('Language list can not be empty');
                   }
-          
+
                   return $languages;
                 }
             );
