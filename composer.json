@@ -1,7 +1,7 @@
 {
     "name": "leaseweb/gettext-translation-bundle",
     "type": "symfony-bundle",
-    "description": "LeaseWeb LswGettextTranslationBundle",
+    "description": "Easy to use and native (faster) gettext translation support",
     "keywords": ["gettext","I18n","Translation"],
     "homepage": "http://www.leaseweblabs.com",
     "license": "MIT",
