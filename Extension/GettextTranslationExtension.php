@@ -1,11 +1,6 @@
 <?php
 namespace Lsw\GettextTranslationBundle\Extension;
 
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\DependencyInjection\Container;
-use Doctrine\Common\Util\Inflector;
-
 /**
  * Gettext translation extention
  *
