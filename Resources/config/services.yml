@@ -5,7 +5,6 @@ parameters:
 services:
   lsw_gettext_translation_extension:
     class: %lsw_gettext_translation_extension.class%
-    arguments: [@router,@service_container]
     tags:
       - { name: twig.extension }
   lsw_gettext_locale_listener:
