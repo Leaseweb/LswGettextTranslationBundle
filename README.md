@@ -26,7 +26,8 @@ Add LswGettextTranslationBundle in your composer.json:
 ```js
 {
     "require": {
-        "leaseweb/gettext-translation-bundle": "1.0.*@dev"
+        "leaseweb/gettext-translation-bundle": "*",
+        ...
     }
 }
 ```
