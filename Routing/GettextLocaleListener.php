@@ -43,10 +43,6 @@ class GettextLocaleListener
    */
   public function onKernelRequest(GetResponseEvent $event)
   {
-      if (HttpKernelInterface::MASTER_REQUEST !== $event->getRequestType()) {
-          return;
-      }
-
       $currentLocale = $this->getCurrentLocale();
       $requestedLocale = $this->getRequestedLocale();
 

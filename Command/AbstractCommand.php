@@ -97,7 +97,12 @@ abstract class AbstractCommand extends ContainerAwareCommand
             mkdir($dir, 0755, true);
         }
 
-        $templates = $this->findFilesInFolder($dir . '/../views', 'twig');
+        $templates = array();
+        if ( $name === 'app' ) {
+            $templates = $this->findFilesInFolder($dir . '/../../', 'twig');
+        } else {
+            $templates = $this->findFilesInFolder($dir . '/../views', 'twig');
+        }
 
         $php  = "<?php\n";
         $twig = $this->getContainer()->get('twig');
