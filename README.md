@@ -74,7 +74,6 @@ More language codes can be found [here](http://lh.2xlibre.net/locales/)
 ### Step 4: Set the language in your application
 
 Use the standard `$request->setLocale('en');` to set the locale in your application.
-You should use `$session->setLocale('en');` when you are still using Symfony 2.0 (<2.1).
 
 Edit the following file to define 2 letter shortcuts for the locales (this is recommended):
 
