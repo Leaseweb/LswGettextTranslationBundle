@@ -16,10 +16,10 @@ class GettextTranslationExtension extends \Twig_Extension
   public function getFunctions()
   {
     return array(
-      '_' => new \Twig_Function_Function('gettext'),
-      '_n' => new \Twig_Function_Function('ngettext'),
-      '__' => new \Twig_Function_Method($this, 'gettext'),
-      '__n' => new \Twig_Function_Method($this, 'ngettext'),
+      new \Twig_SimpleFunction('_', 'gettext'),
+      new \Twig_SimpleFunction('_n', 'ngettext'),
+      new \Twig_SimpleFunction('__' , array($this, 'gettext')),
+      new \Twig_SimpleFunction('__n', array($this, 'ngettext')),
     );
   }
 
