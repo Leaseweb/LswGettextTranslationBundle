@@ -7,8 +7,8 @@ translation support of Symfony2.
 
 ## Requirements
 
-* PHP 5.3 with gettext support
-* Symfony 2.1 (works under Symfony 2.0 as well)
+* PHP with gettext support
+* Symfony 2.8+
 
 ## Installation
 
