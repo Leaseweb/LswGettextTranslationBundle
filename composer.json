@@ -15,15 +15,9 @@
     "require": {
         "php": ">=5.3.2",
         "symfony/framework-bundle": ">=2.1",
-        "symfony/security-bundle": ">=2.1"
+        "twig/twig": "~1.12"
     },
     "require-dev": {
-        "twig/twig": "*",
-        "doctrine/doctrine-bundle": "*",
-        "swiftmailer/swiftmailer": "*",
-        "willdurand/propel-typehintable-behavior": "dev-master",
-        "symfony/yaml": "2.1.*",
-        "symfony/validator": "2.1.*"
     },
     "autoload": {
         "psr-0": { "Lsw\\GettextTranslationBundle": "" }
