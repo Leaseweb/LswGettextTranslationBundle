@@ -108,7 +108,7 @@ EOT
             $path = "$root/Resources/gettext/combined/$lang/LC_MESSAGES/messages$newVersion.mo";
             $results = $this->compile($file, $path);
             foreach ($results as $filename => $status) {
-              $output->writeln("$status: $filename");
+                $output->writeln("$status: $filename");
             }
 
             if (!$input->getOption('keep-messages')) {
@@ -150,11 +150,11 @@ EOT
                 'Please enter the list of languages (comma seperated):',
                 function($languages)
                 {
-                  if (empty($languages)) {
-                    throw new \Exception('Language list can not be empty');
-                  }
+                    if (empty($languages)) {
+                        throw new \Exception('Language list can not be empty');
+                    }
 
-                  return $languages;
+                    return $languages;
                 }
             );
             $input->setArgument('languages', $languages);

@@ -113,11 +113,11 @@ EOT
                 'Please enter the list of languages (comma seperated):',
                 function($languages)
                 {
-                  if (empty($languages)) {
-                    throw new \Exception('Language list can not be empty');
-                  }
+                    if (empty($languages)) {
+                        throw new \Exception('Language list can not be empty');
+                    }
 
-                  return $languages;
+                    return $languages;
                 }
             );
             $input->setArgument('languages', $languages);
