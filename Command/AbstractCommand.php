@@ -36,7 +36,8 @@ abstract class AbstractCommand extends ContainerAwareCommand
         $templates = array();
         if (is_dir($dir)) {
             $finder = new Finder();
-            foreach ($finder->files()->followLinks()->in($dir)->exclude('cache')->name('*.' . $extension) as $file) {
+            $exclude = $this->getContainer()->getParameter('lsw_gettext_exclude_dirs');
+            foreach ($finder->files()->followLinks()->in($dir)->exclude($exclude)->name('*.' . $extension) as $file) {
                 $templates[] = $this->relative($file->getPathname());
             }
         }
@@ -97,12 +98,12 @@ abstract class AbstractCommand extends ContainerAwareCommand
             mkdir($dir, 0755, true);
         }
 
-        $templates = array();
         if ( $name === 'app' ) {
-            $templates = $this->findFilesInFolder($dir . '/../../', 'twig');
+            $folder = $dir . '/../../';
         } else {
-            $templates = $this->findFilesInFolder($dir . '/../views', 'twig');
+            $folder = $dir . '/../views';
         }
+        $templates = $this->findFilesInFolder($folder, 'twig');
 
         $php  = "<?php\n";
         $twig = $this->getContainer()->get('twig');
@@ -129,16 +130,16 @@ abstract class AbstractCommand extends ContainerAwareCommand
     /**
      * Extract translation strings from all *.php files within the given path
      * @param string $path
-     * @return string
+     * @param string $name
+     * @return array
      * @throws \Exception
      */
-    protected function extractFromPhp($path)
+    protected function extractFromPhp($path, $name)
     {
-        $results = array();
-
+        $dir = dirname($path);
         // check the path exists
-        if (!file_exists(dirname($path))) {
-            mkdir(dirname($path), 0755, true);
+        if (!file_exists($dir)) {
+            mkdir($dir, 0755, true);
         }
 
         // clean .tmp file for further using it as cache
@@ -146,8 +147,14 @@ abstract class AbstractCommand extends ContainerAwareCommand
             unlink("$path.tmp");
         }
 
+        if ( $name === 'app') {
+            $folder = $dir . $this->getContainer()->getParameter('lsw_gettext_app_relative_folder');
+        } else {
+            $folder = $dir . '/../..';
+        }
+
         // find all *.php files in the given directory
-        $files = $this->findFilesInFolder(dirname($path) . '/../..', 'php');
+        $files = $this->findFilesInFolder($folder, 'php');
 
         // define options for finding translation strings within *.php files
         $options = implode(' ',array(

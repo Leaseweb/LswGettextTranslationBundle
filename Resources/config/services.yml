@@ -1,6 +1,11 @@
 parameters:
   lsw_gettext_translation_extension.class: Lsw\GettextTranslationBundle\Extension\GettextTranslationExtension
   lsw_gettext_locale_listener.class: Lsw\GettextTranslationBundle\Routing\GettextLocaleListener
+  lsw_gettext_exclude_dirs:
+    -  cache
+    -  vendor
+    -  tests
+  lsw_gettext_app_relative_folder: /../..
   
 services:
   lsw_gettext_translation_extension:

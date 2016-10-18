@@ -63,7 +63,7 @@ EOT
         foreach ($results as $filename => $status) {
             $output->writeln("$status: $filename");
         }
-        $results = $this->extractFromPhp($path);
+        $results = $this->extractFromPhp($path, 'app');
         foreach ($results as $filename => $status) {
             $output->writeln("$status: $filename");
         }
