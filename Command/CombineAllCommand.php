@@ -72,10 +72,12 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $root = $this->getContainer()->getParameter('kernel.root_dir');
-        chdir($root.'/..');
+        $container = $this->getContainer();
+        $root = $container->getParameter('kernel.root_dir');
+        $resourcesSubfolder = $container->getParameter('lsw_gettext_resources_subfolder');
+        chdir($root . '/..');
 
-        $configFile = $root."/Resources/gettext/version";
+        $configFile = $root . $resourcesSubfolder . "version";
         $languages  = explode(',', trim($input->getArgument('languages'), ','));
         $bundles    = $this->getContainer()->get('kernel')->getBundles();
         $version    = file_exists($configFile) ? file_get_contents($configFile) : "";
@@ -86,26 +88,26 @@ EOT
             $files = array();
             // add the application translation file as the first file
             // the msgcat --allow-first allows for override of bundle translations
-            $file = "$root/Resources/gettext/locale/$lang/LC_MESSAGES/messages.po";
+            $file = $root . $resourcesSubfolder . 'locale/$lang/LC_MESSAGES/messages.po';
             if (file_exists($file)) {
                 $files[] = $file;
             }
             // add the bundle translation files
             foreach ($bundles as $bundleObj) {
-                $file = $bundleObj->getPath()."/Resources/gettext/locale/$lang/LC_MESSAGES/messages.po";
+                $file = $bundleObj->getPath() . $resourcesSubfolder . 'locale/$lang/LC_MESSAGES/messages.po';
                 if (file_exists($file)) {
                     $files[] = $file;
                 }
             }
 
-            $path = "$root/Resources/gettext/combined/$lang/LC_MESSAGES/messages$newVersion.po";
+            $path = $root . $resourcesSubfolder . 'combined/$lang/LC_MESSAGES/messages$newVersion.po';
             $results = $this->combineFiles($files, $path);
             foreach ($results as $filename => $status) {
                 $output->writeln("$status: $filename");
             }
 
             $file = $path;
-            $path = "$root/Resources/gettext/combined/$lang/LC_MESSAGES/messages$newVersion.mo";
+            $path = $root . $resourcesSubfolder . 'combined/' . $lang . '/LC_MESSAGES/messages' . $newVersion . '.mo';
             $results = $this->compile($file, $path);
             foreach ($results as $filename => $status) {
                 $output->writeln("$status: $filename");
@@ -120,16 +122,17 @@ EOT
                     $output->writeln("Version was not saved: " . $newVersion);
                 }
 
-                if (file_exists("$root/Resources/gettext/combined/$lang/LC_MESSAGES/messages$version.po")) {
-                    unlink("$root/Resources/gettext/combined/$lang/LC_MESSAGES/messages$version.po");
+                $poFile = $root . $resourcesSubfolder . 'combined/' . $lang . '/LC_MESSAGES/messages' . $version . '.po';
+                if (file_exists($poFile)) {
+                    unlink($poFile);
                 }
-                if (file_exists("$root/Resources/gettext/combined/$lang/LC_MESSAGES/messages$version.mo")) {
-                    unlink("$root/Resources/gettext/combined/$lang/LC_MESSAGES/messages$version.mo");
+
+                $moFile = $root . $resourcesSubfolder . 'combined/' . $lang . '/LC_MESSAGES/messages' . $version . '.mo';
+                if (file_exists($moFile)) {
+                    unlink($moFile);
                 }
             }
-
         }
-
         //http://www.gnu.org/software/gettext/manual/html_node/xgettext-Invocation.html
     }
 

@@ -57,9 +57,12 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $root = $this->getContainer()->getParameter('kernel.root_dir');
-        chdir("$root/..");
-        $path = "$root/Resources/gettext/messages.pot";
+        $container = $this->getContainer();
+        $root = $container->getParameter('kernel.root_dir');
+        $resourcesSubfolder = $container->getParameter('lsw_gettext_resources_subfolder');
+        $messagesFile = $container->getParameter('lsw_gettext_messages_template_file');
+        chdir($root . '/..');
+        $path = $root . $resourcesSubfolder . $messagesFile;
         $languages = $input->getArgument('languages');
         $results = $this->initializeFromTemplate($path, $languages);
         foreach ($results as $filename => $status) {
