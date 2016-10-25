@@ -44,7 +44,7 @@ class LswGettextTranslationExtension extends Extension
    * Returns an alias for gettext translation extension
    *
    * @see \Symfony\Component\HttpKernel\DependencyInjection\Extension::getAlias()
-   * @return st	ring
+   * @return string
    */
   public function getAlias()
   {

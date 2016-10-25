@@ -1,47 +1,50 @@
 <?php
+/*
+ * This file is part of the LswGettextTranslationBundle package.
+ *
+ * (c) LswGettextTranslationBundle <http://leaseweb.com/>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 namespace Lsw\GettextTranslationBundle\Command;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-use Symfony\Component\Finder\Finder;
-use Symfony\Component\Routing\Exception\ResourceNotFoundException;
-
 /**
- * InitializeBundleCommand extracts records to be translated from the current application
+ * ExtractApplicationCommand extracts records to be translated from the current application
  *
- * @author Maurits van der Schee <m.vanderschee@leaseweb.com>
- * @author Andrii Shchurkov <a.shchurkov@leaseweb.com>
+ * @author Marc Casòliva <marc@casoliva.cat>
  */
-class InitializeApplicationCommand extends AbstractCommand
+class CompileCommand extends AbstractCommand
 {
     /**
-     * Configures extractor
+     * Configure
      *
      * @see Command
      */
     protected function configure()
     {
         $this
-            ->setName('gettext:app:initialize')
-            ->setDescription('Intialize translations from the application')
+            ->setName('gettext:compile')
+            ->setDescription('Compiles translations from .po to .mo for specific languages')
             ->setDefinition(array(
-                new InputArgument('languages', InputArgument::REQUIRED, 'The language list'),
+                new InputArgument('languages', InputArgument::REQUIRED, 'The language list')
             ))
             ->setHelp(<<<EOT
-The <info>gettext:app:initialize</info> command initialize translations for the application for specific languages:
+The <info>gettext:combine</info> command combines translations from all
+bundles and the application for specific languages:
 
-  <info>php app/console gettext:app:initialize</info>
+  <info>php app/console gettext:compile</info>
 
 This interactive shell will ask you for a language list.
 
 You can alternatively specify the comma-separated language list as the first argument:
 
-  <info>php app/console gettext:app:initialize en_US,nl_NL,de_DE</info>
+  <info>php app/console gettext:compile en_US,nl_NL,de_DE</info>
 
 EOT
             );
@@ -50,24 +53,37 @@ EOT
     /**
      * Execute method get an input texts prepare it for each locale
      *
-     * @param InputInterface  $input  Input interface
+     * @param InputInterface $input Input interface
      * @param OutputInterface $output Output interface
      *
      * @see Command
+     * @return int|null|void
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $container = $this->getContainer();
         $root = $container->getParameter('kernel.root_dir');
         $resourcesSubfolder = $container->getParameter('lsw_gettext_resources_subfolder');
-        $messagesFile = $container->getParameter('lsw_gettext_messages_template_file');
         chdir($root . '/..');
-        $path = $root . $resourcesSubfolder . $messagesFile;
-        $languages = $input->getArgument('languages');
-        $results = $this->initializeFromTemplate($path, $languages);
-        foreach ($results as $filename => $status) {
-            $output->writeln("$status: $filename");
+
+        $configFile = $root . $resourcesSubfolder . "version";
+        $languages  = explode(',', trim($input->getArgument('languages'), ','));
+
+        foreach ($languages as $lang) {
+            $lang = trim($lang);
+            $file = $root . $resourcesSubfolder . $lang . '/LC_MESSAGES/messages.po';
+            if (!file_exists($file)) {
+                $output->writeln("File does not exist: " . $file);
+                exit(-1);
+            }
+
+            $path = $root . $resourcesSubfolder . $lang . '/LC_MESSAGES/messages.mo';
+            $results = $this->compile($file, $path);
+            foreach ($results as $filename => $status) {
+                $output->writeln("$status: $filename");
+            }
         }
+        //http://www.gnu.org/software/gettext/manual/html_node/xgettext-Invocation.html
     }
 
     /**
@@ -85,8 +101,7 @@ EOT
             $languages = $this->getHelper('dialog')->askAndValidate(
                 $output,
                 'Please enter the list of languages (comma seperated):',
-                function($languages)
-                {
+                function ($languages) {
                     if (empty($languages)) {
                         throw new \Exception('Language list can not be empty');
                     }

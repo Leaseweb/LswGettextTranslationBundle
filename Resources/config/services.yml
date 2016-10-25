@@ -1,14 +1,22 @@
 parameters:
   lsw_gettext_translation_extension.class: Lsw\GettextTranslationBundle\Extension\GettextTranslationExtension
   lsw_gettext_locale_listener.class: Lsw\GettextTranslationBundle\Routing\GettextLocaleListener
-  
+  lsw_gettext_exclude_dirs:
+    -  cache
+    -  vendor
+    -  tests
+  lsw_gettext_app_relative_folder: /../..
+  lsw_gettext_resources_subfolder: /Resources/gettext/
+  lsw_gettext_combined_folder: /Resources/gettext/combined/
+  lsw_gettext_messages_template_file: messages.pot
+
 services:
   lsw_gettext_translation_extension:
-    class: %lsw_gettext_translation_extension.class%
+    class: '%lsw_gettext_translation_extension.class%'
     tags:
       - { name: twig.extension }
   lsw_gettext_locale_listener:
-    class: %lsw_gettext_locale_listener.class%
-    arguments: [%gettext.locale_shortcuts%, "@router", %kernel.root_dir%]
+    class: '%lsw_gettext_locale_listener.class%'
+    arguments: ['%gettext.locale_shortcuts%', "@router", '%kernel.root_dir%', '%lsw_gettext_resources_subfolder%']
     tags:
       - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }

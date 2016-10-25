@@ -36,7 +36,8 @@ abstract class AbstractCommand extends ContainerAwareCommand
         $templates = array();
         if (is_dir($dir)) {
             $finder = new Finder();
-            foreach ($finder->files()->followLinks()->in($dir)->exclude('cache')->name('*.' . $extension) as $file) {
+            $exclude = $this->getContainer()->getParameter('lsw_gettext_exclude_dirs');
+            foreach ($finder->files()->followLinks()->in($dir)->exclude($exclude)->name('*.' . $extension) as $file) {
                 $templates[] = $this->relative($file->getPathname());
             }
         }
@@ -97,12 +98,12 @@ abstract class AbstractCommand extends ContainerAwareCommand
             mkdir($dir, 0755, true);
         }
 
-        $templates = array();
-        if ( $name === 'app' ) {
-            $templates = $this->findFilesInFolder($dir . '/../../', 'twig');
+        if ($name === 'app') {
+            $folder = $dir . '/../../';
         } else {
-            $templates = $this->findFilesInFolder($dir . '/../views', 'twig');
+            $folder = $dir . '/../views';
         }
+        $templates = $this->findFilesInFolder($folder, 'twig');
 
         $php  = "<?php\n";
         $twig = $this->getContainer()->get('twig');
@@ -129,28 +130,34 @@ abstract class AbstractCommand extends ContainerAwareCommand
     /**
      * Extract translation strings from all *.php files within the given path
      * @param string $path
-     * @return string
+     * @param string $name
+     * @return array
      * @throws \Exception
      */
-    protected function extractFromPhp($path)
+    protected function extractFromPhp($path, $name)
     {
-        $results = array();
-
+        $dir = dirname($path);
         // check the path exists
-        if (!file_exists(dirname($path))) {
-            mkdir(dirname($path), 0755, true);
+        if (!file_exists($dir)) {
+            mkdir($dir, 0755, true);
         }
 
         // clean .tmp file for further using it as cache
-        if (file_exists("$path.tmp"))  {
+        if (file_exists("$path.tmp")) {
             unlink("$path.tmp");
         }
 
+        if ($name === 'app') {
+            $folder = $dir . $this->getContainer()->getParameter('lsw_gettext_app_relative_folder');
+        } else {
+            $folder = $dir . '/../..';
+        }
+
         // find all *.php files in the given directory
-        $files = $this->findFilesInFolder(dirname($path) . '/../..', 'php');
+        $files = $this->findFilesInFolder($folder, 'php');
 
         // define options for finding translation strings within *.php files
-        $options = implode(' ',array(
+        $options = implode(' ', array(
             '--keyword=__:1',
             '--keyword=__n:1,2',
             '--keyword=_:1',
@@ -163,7 +170,7 @@ abstract class AbstractCommand extends ContainerAwareCommand
         ));
 
         $process = new Process('xgettext '.$options);
-        $process->setStdin(implode("\n", $files));
+        $process->setInput(implode("\n", $files));
         $process->run();
         $output = $process->getOutput();
         if (!$process->isSuccessful()) {
@@ -217,7 +224,7 @@ abstract class AbstractCommand extends ContainerAwareCommand
             $data = file_get_contents($template);
             $version = $this->relative($target . '/../..') . '@' . date('YmdHis');
             $data = preg_replace('/Project-Id-Version: PACKAGE VERSION\\\n/', 'Project-Id-Version: ' . $version . '\n', $data, 1);
-            $data = preg_replace('/Language: \\\n/','Language: ' . $lang . '\n', $data, 1);
+            $data = preg_replace('/Language: \\\n/', 'Language: ' . $lang . '\n', $data, 1);
             $data = preg_replace('/charset=CHARSET/', 'charset=UTF-8', $data, 1);
             $status = file_put_contents($file, $data) ? 'Created' : 'Failed';
             $results[$this->relative($file)] = $status;
@@ -230,7 +237,7 @@ abstract class AbstractCommand extends ContainerAwareCommand
      * Combine list of .po files into one
      * @param array $files
      * @param string $path
-     * @return string
+     * @return array
      * @throws \Exception
      */
     protected function combineFiles(array $files, $path)
@@ -242,12 +249,12 @@ abstract class AbstractCommand extends ContainerAwareCommand
         // clean .tmp file for further using it as cache
         if (!file_exists(dirname($path))) {
             mkdir(dirname($path), 0755, true);
-        } else if (file_exists("$path.tmp")) {
+        } elseif (file_exists("$path.tmp")) {
             unlink("$path.tmp");
         }
 
         // define options for finding translation strings within *.php files
-        $options = implode(' ',array(
+        $options = implode(' ', array(
             '--use-first',
             '--force-po',
             '-f -',
@@ -255,7 +262,7 @@ abstract class AbstractCommand extends ContainerAwareCommand
         ));
 
         $process = new Process('msgcat '.$options);
-        $process->setStdin(implode("\n", $files));
+        $process->setInput(implode("\n", $files));
         $process->run();
         $output = $process->getOutput();
 
@@ -282,7 +289,7 @@ abstract class AbstractCommand extends ContainerAwareCommand
      * @return array
      * @throws \Exception
      */
-    protected function compile($file,$path)
+    protected function compile($file, $path)
     {
         $results = array();
 
@@ -290,7 +297,7 @@ abstract class AbstractCommand extends ContainerAwareCommand
         if (file_exists("$path.tmp")) {
             unlink("$path.tmp");
         }
-        $options = implode(' ',array(
+        $options = implode(' ', array(
             '--check',
             "-o $path.tmp",
             $file,
@@ -298,7 +305,6 @@ abstract class AbstractCommand extends ContainerAwareCommand
 
         $process = new Process('msgfmt '.$options);
         $process->run();
-        $output = $process->getOutput();
         if (!$process->isSuccessful()) {
             throw new \Exception($process->getErrorOutput());
         }

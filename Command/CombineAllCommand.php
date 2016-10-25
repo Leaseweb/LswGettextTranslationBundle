@@ -65,50 +65,56 @@ EOT
     /**
      * Execute method get an input texts prepare it for each locale
      *
-     * @param InputInterface  $input  Input interface
+     * @param InputInterface $input Input interface
      * @param OutputInterface $output Output interface
      *
      * @see Command
+     * @return int|null|void
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $root = $this->getContainer()->getParameter('kernel.root_dir');
-        chdir($root.'/..');
+        $container = $this->getContainer();
+        $root = $container->getParameter('kernel.root_dir');
+        $resourcesSubfolder = $container->getParameter('lsw_gettext_resources_subfolder');
+        $combinedFolder = $container->getParameter('lsw_gettext_combined_folder');
+        chdir($root . '/..');
 
-        $configFile = $root."/Resources/gettext/version";
+        $configFile = $root . $resourcesSubfolder . "version";
         $languages  = explode(',', trim($input->getArgument('languages'), ','));
         $bundles    = $this->getContainer()->get('kernel')->getBundles();
         $version    = file_exists($configFile) ? file_get_contents($configFile) : "";
         $newVersion = $input->getOption('increase-version') ? "_" . strtotime("now") : $version;
+
+        var_dump($input->getOption('increase-version'));
 
         foreach ($languages as $lang) {
             $lang = trim($lang);
             $files = array();
             // add the application translation file as the first file
             // the msgcat --allow-first allows for override of bundle translations
-            $file = "$root/Resources/gettext/locale/$lang/LC_MESSAGES/messages.po";
+            $file = $root . $resourcesSubfolder . $lang . '/LC_MESSAGES/messages.po';
             if (file_exists($file)) {
                 $files[] = $file;
             }
             // add the bundle translation files
             foreach ($bundles as $bundleObj) {
-                $file = $bundleObj->getPath()."/Resources/gettext/locale/$lang/LC_MESSAGES/messages.po";
+                $file = $bundleObj->getPath() . $resourcesSubfolder . $lang . '/LC_MESSAGES/messages.po';
                 if (file_exists($file)) {
                     $files[] = $file;
                 }
             }
 
-            $path = "$root/Resources/gettext/combined/$lang/LC_MESSAGES/messages$newVersion.po";
+            $path = $root . $combinedFolder . $lang . '/LC_MESSAGES/messages' . $newVersion . '.po';
             $results = $this->combineFiles($files, $path);
             foreach ($results as $filename => $status) {
                 $output->writeln("$status: $filename");
             }
 
             $file = $path;
-            $path = "$root/Resources/gettext/combined/$lang/LC_MESSAGES/messages$newVersion.mo";
+            $path = $root . $combinedFolder . $lang . '/LC_MESSAGES/messages' . $newVersion . '.mo';
             $results = $this->compile($file, $path);
             foreach ($results as $filename => $status) {
-              $output->writeln("$status: $filename");
+                $output->writeln("$status: $filename");
             }
 
             if (!$input->getOption('keep-messages')) {
@@ -120,16 +126,17 @@ EOT
                     $output->writeln("Version was not saved: " . $newVersion);
                 }
 
-                if (file_exists("$root/Resources/gettext/combined/$lang/LC_MESSAGES/messages$version.po")) {
-                    unlink("$root/Resources/gettext/combined/$lang/LC_MESSAGES/messages$version.po");
+                $poFile = $root . $combinedFolder . $lang . '/LC_MESSAGES/messages' . $version . '.po';
+                if (file_exists($poFile)) {
+                    unlink($poFile);
                 }
-                if (file_exists("$root/Resources/gettext/combined/$lang/LC_MESSAGES/messages$version.mo")) {
-                    unlink("$root/Resources/gettext/combined/$lang/LC_MESSAGES/messages$version.mo");
+
+                $moFile = $root . $combinedFolder . $lang . '/LC_MESSAGES/messages' . $version . '.mo';
+                if (file_exists($moFile)) {
+                    unlink($moFile);
                 }
             }
-
         }
-
         //http://www.gnu.org/software/gettext/manual/html_node/xgettext-Invocation.html
     }
 
@@ -140,7 +147,6 @@ EOT
      * @param OutputInterface $output Output interface
      *
      * @see Command
-     * @return mixed
      */
     protected function interact(InputInterface $input, OutputInterface $output)
     {
@@ -148,13 +154,12 @@ EOT
             $languages = $this->getHelper('dialog')->askAndValidate(
                 $output,
                 'Please enter the list of languages (comma seperated):',
-                function($languages)
-                {
-                  if (empty($languages)) {
-                    throw new \Exception('Language list can not be empty');
-                  }
+                function ($languages) {
+                    if (empty($languages)) {
+                        throw new \Exception('Language list can not be empty');
+                    }
 
-                  return $languages;
+                    return $languages;
                 }
             );
             $input->setArgument('languages', $languages);

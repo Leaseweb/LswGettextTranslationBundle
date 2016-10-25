@@ -62,7 +62,10 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $root = $this->getContainer()->getParameter('kernel.root_dir');
+        $container = $this->getContainer();
+        $root = $container->getParameter('kernel.root_dir');
+        $resourcesSubfolder = $container->getParameter('lsw_gettext_resources_subfolder');
+        $messagesFile = $container->getParameter('lsw_gettext_messages_template_file');
         chdir("$root/..");
         $bundle = $input->getArgument('bundle');
         $bundle = ltrim($bundle, '@');
@@ -71,13 +74,13 @@ EOT
             throw new ResourceNotFoundException("Cannot load bundle resource '$bundle'");
         }
 
-        $path = $bundleObj->getPath().'/Resources/gettext/messages.pot';
-        $twig = $bundleObj->getPath().'/Resources/gettext/twig.cache.php';
+        $path = $bundleObj->getPath() . $resourcesSubfolder . $messagesFile;
+        $twig = $bundleObj->getPath() . $resourcesSubfolder . 'twig.cache.php';
         $results = $this->convertTwigToPhp($twig, $bundle);
         foreach ($results as $filename => $status) {
             $output->writeln("$status: $filename");
         }
-        $results = $this->extractFromPhp($path);
+        $results = $this->extractFromPhp($path, $bundle);
         foreach ($results as $filename => $status) {
             $output->writeln("$status: $filename");
         }

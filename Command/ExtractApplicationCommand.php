@@ -55,15 +55,18 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $root = $this->getContainer()->getParameter('kernel.root_dir');
-        chdir("$root/..");
-        $path = "$root/Resources/gettext/messages.pot";
-        $twig = "$root/Resources/gettext/twig.cache.php";
+        $container = $this->getContainer();
+        $root = $container->getParameter('kernel.root_dir');
+        $resourcesSubfolder = $container->getParameter('lsw_gettext_resources_subfolder');
+        $messagesFile = $container->getParameter('lsw_gettext_messages_template_file');
+        chdir($root.'/..');
+        $path = $root . $resourcesSubfolder . $messagesFile;
+        $twig = $root . $resourcesSubfolder . 'twig.cache.php';
         $results = $this->convertTwigToPhp($twig, 'app');
         foreach ($results as $filename => $status) {
             $output->writeln("$status: $filename");
         }
-        $results = $this->extractFromPhp($path);
+        $results = $this->extractFromPhp($path, 'app');
         foreach ($results as $filename => $status) {
             $output->writeln("$status: $filename");
         }

@@ -64,15 +64,18 @@ EOT
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $root = $this->getContainer()->getParameter('kernel.root_dir');
-        chdir("$root/..");
+        $container = $this->getContainer();
+        $root = $container->getParameter('kernel.root_dir');
+        $resourcesSubfolder = $container->getParameter('lsw_gettext_resources_subfolder');
+        $messagesFile = $container->getParameter('lsw_gettext_messages_template_file');
+        chdir($root . '/..');
         $bundle = $input->getArgument('bundle');
         $bundle = ltrim($bundle, '@');
         $bundleObj = $this->getContainer()->get('kernel')->getBundle($bundle);
         if (!$bundleObj) {
             throw new ResourceNotFoundException("Cannot load bundle resource '$bundle'");
         }
-        $path = $bundleObj->getPath().'/Resources/gettext/messages.pot';
+        $path = $bundleObj->getPath() . $resourcesSubfolder . $messagesFile;
         $languages = $input->getArgument('languages');
         $results = $this->initializeFromTemplate($path, $languages);
         foreach ($results as $filename => $status) {
@@ -113,11 +116,11 @@ EOT
                 'Please enter the list of languages (comma seperated):',
                 function($languages)
                 {
-                  if (empty($languages)) {
-                    throw new \Exception('Language list can not be empty');
-                  }
+                    if (empty($languages)) {
+                        throw new \Exception('Language list can not be empty');
+                    }
 
-                  return $languages;
+                    return $languages;
                 }
             );
             $input->setArgument('languages', $languages);
