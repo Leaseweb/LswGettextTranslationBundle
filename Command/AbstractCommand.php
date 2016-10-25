@@ -98,7 +98,7 @@ abstract class AbstractCommand extends ContainerAwareCommand
             mkdir($dir, 0755, true);
         }
 
-        if ( $name === 'app' ) {
+        if ($name === 'app') {
             $folder = $dir . '/../../';
         } else {
             $folder = $dir . '/../views';
@@ -143,11 +143,11 @@ abstract class AbstractCommand extends ContainerAwareCommand
         }
 
         // clean .tmp file for further using it as cache
-        if (file_exists("$path.tmp"))  {
+        if (file_exists("$path.tmp")) {
             unlink("$path.tmp");
         }
 
-        if ( $name === 'app') {
+        if ($name === 'app') {
             $folder = $dir . $this->getContainer()->getParameter('lsw_gettext_app_relative_folder');
         } else {
             $folder = $dir . '/../..';
@@ -157,7 +157,7 @@ abstract class AbstractCommand extends ContainerAwareCommand
         $files = $this->findFilesInFolder($folder, 'php');
 
         // define options for finding translation strings within *.php files
-        $options = implode(' ',array(
+        $options = implode(' ', array(
             '--keyword=__:1',
             '--keyword=__n:1,2',
             '--keyword=_:1',
@@ -224,7 +224,7 @@ abstract class AbstractCommand extends ContainerAwareCommand
             $data = file_get_contents($template);
             $version = $this->relative($target . '/../..') . '@' . date('YmdHis');
             $data = preg_replace('/Project-Id-Version: PACKAGE VERSION\\\n/', 'Project-Id-Version: ' . $version . '\n', $data, 1);
-            $data = preg_replace('/Language: \\\n/','Language: ' . $lang . '\n', $data, 1);
+            $data = preg_replace('/Language: \\\n/', 'Language: ' . $lang . '\n', $data, 1);
             $data = preg_replace('/charset=CHARSET/', 'charset=UTF-8', $data, 1);
             $status = file_put_contents($file, $data) ? 'Created' : 'Failed';
             $results[$this->relative($file)] = $status;
@@ -237,7 +237,7 @@ abstract class AbstractCommand extends ContainerAwareCommand
      * Combine list of .po files into one
      * @param array $files
      * @param string $path
-     * @return string
+     * @return array
      * @throws \Exception
      */
     protected function combineFiles(array $files, $path)
@@ -249,12 +249,12 @@ abstract class AbstractCommand extends ContainerAwareCommand
         // clean .tmp file for further using it as cache
         if (!file_exists(dirname($path))) {
             mkdir(dirname($path), 0755, true);
-        } else if (file_exists("$path.tmp")) {
+        } elseif (file_exists("$path.tmp")) {
             unlink("$path.tmp");
         }
 
         // define options for finding translation strings within *.php files
-        $options = implode(' ',array(
+        $options = implode(' ', array(
             '--use-first',
             '--force-po',
             '-f -',
@@ -289,7 +289,7 @@ abstract class AbstractCommand extends ContainerAwareCommand
      * @return array
      * @throws \Exception
      */
-    protected function compile($file,$path)
+    protected function compile($file, $path)
     {
         $results = array();
 
@@ -297,7 +297,7 @@ abstract class AbstractCommand extends ContainerAwareCommand
         if (file_exists("$path.tmp")) {
             unlink("$path.tmp");
         }
-        $options = implode(' ',array(
+        $options = implode(' ', array(
             '--check',
             "-o $path.tmp",
             $file,
@@ -305,7 +305,6 @@ abstract class AbstractCommand extends ContainerAwareCommand
 
         $process = new Process('msgfmt '.$options);
         $process->run();
-        $output = $process->getOutput();
         if (!$process->isSuccessful()) {
             throw new \Exception($process->getErrorOutput());
         }

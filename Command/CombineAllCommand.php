@@ -65,16 +65,18 @@ EOT
     /**
      * Execute method get an input texts prepare it for each locale
      *
-     * @param InputInterface  $input  Input interface
+     * @param InputInterface $input Input interface
      * @param OutputInterface $output Output interface
      *
      * @see Command
+     * @return int|null|void
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $container = $this->getContainer();
         $root = $container->getParameter('kernel.root_dir');
         $resourcesSubfolder = $container->getParameter('lsw_gettext_resources_subfolder');
+        $combinedFolder = $container->getParameter('lsw_gettext_combined_folder');
         chdir($root . '/..');
 
         $configFile = $root . $resourcesSubfolder . "version";
@@ -83,31 +85,33 @@ EOT
         $version    = file_exists($configFile) ? file_get_contents($configFile) : "";
         $newVersion = $input->getOption('increase-version') ? "_" . strtotime("now") : $version;
 
+        var_dump($input->getOption('increase-version'));
+
         foreach ($languages as $lang) {
             $lang = trim($lang);
             $files = array();
             // add the application translation file as the first file
             // the msgcat --allow-first allows for override of bundle translations
-            $file = $root . $resourcesSubfolder . 'locale/$lang/LC_MESSAGES/messages.po';
+            $file = $root . $resourcesSubfolder . $lang . '/LC_MESSAGES/messages.po';
             if (file_exists($file)) {
                 $files[] = $file;
             }
             // add the bundle translation files
             foreach ($bundles as $bundleObj) {
-                $file = $bundleObj->getPath() . $resourcesSubfolder . 'locale/$lang/LC_MESSAGES/messages.po';
+                $file = $bundleObj->getPath() . $resourcesSubfolder . $lang . '/LC_MESSAGES/messages.po';
                 if (file_exists($file)) {
                     $files[] = $file;
                 }
             }
 
-            $path = $root . $resourcesSubfolder . 'combined/$lang/LC_MESSAGES/messages$newVersion.po';
+            $path = $root . $combinedFolder . $lang . '/LC_MESSAGES/messages' . $newVersion . '.po';
             $results = $this->combineFiles($files, $path);
             foreach ($results as $filename => $status) {
                 $output->writeln("$status: $filename");
             }
 
             $file = $path;
-            $path = $root . $resourcesSubfolder . 'combined/' . $lang . '/LC_MESSAGES/messages' . $newVersion . '.mo';
+            $path = $root . $combinedFolder . $lang . '/LC_MESSAGES/messages' . $newVersion . '.mo';
             $results = $this->compile($file, $path);
             foreach ($results as $filename => $status) {
                 $output->writeln("$status: $filename");
@@ -122,12 +126,12 @@ EOT
                     $output->writeln("Version was not saved: " . $newVersion);
                 }
 
-                $poFile = $root . $resourcesSubfolder . 'combined/' . $lang . '/LC_MESSAGES/messages' . $version . '.po';
+                $poFile = $root . $combinedFolder . $lang . '/LC_MESSAGES/messages' . $version . '.po';
                 if (file_exists($poFile)) {
                     unlink($poFile);
                 }
 
-                $moFile = $root . $resourcesSubfolder . 'combined/' . $lang . '/LC_MESSAGES/messages' . $version . '.mo';
+                $moFile = $root . $combinedFolder . $lang . '/LC_MESSAGES/messages' . $version . '.mo';
                 if (file_exists($moFile)) {
                     unlink($moFile);
                 }
@@ -143,7 +147,6 @@ EOT
      * @param OutputInterface $output Output interface
      *
      * @see Command
-     * @return mixed
      */
     protected function interact(InputInterface $input, OutputInterface $output)
     {
@@ -151,8 +154,7 @@ EOT
             $languages = $this->getHelper('dialog')->askAndValidate(
                 $output,
                 'Please enter the list of languages (comma seperated):',
-                function($languages)
-                {
+                function ($languages) {
                     if (empty($languages)) {
                         throw new \Exception('Language list can not be empty');
                     }

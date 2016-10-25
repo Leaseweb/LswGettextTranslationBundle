@@ -7,6 +7,7 @@ parameters:
     -  tests
   lsw_gettext_app_relative_folder: /../..
   lsw_gettext_resources_subfolder: /Resources/gettext/
+  lsw_gettext_combined_folder: /Resources/gettext/combined/
   lsw_gettext_messages_template_file: messages.pot
 
 services:
