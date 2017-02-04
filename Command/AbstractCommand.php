@@ -10,10 +10,6 @@
 namespace Lsw\GettextTranslationBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-
 use Symfony\Component\Process\Process;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
@@ -97,8 +93,7 @@ abstract class AbstractCommand extends ContainerAwareCommand
             mkdir($dir, 0755, true);
         }
 
-        $templates = array();
-        if ( $name === 'app' ) {
+        if ($name === 'app') {
             $templates = $this->findFilesInFolder($dir . '/../../', 'twig');
         } else {
             $templates = $this->findFilesInFolder($dir . '/../views', 'twig');
@@ -106,16 +101,35 @@ abstract class AbstractCommand extends ContainerAwareCommand
 
         $php  = "<?php\n";
         $twig = $this->getContainer()->get('twig');
-        $twig->setLoader(new \Twig_Loader_String());
+
+        /** @var \Twig_Loader_Filesystem $loader */
+        $loader = $twig->getLoader();
+
         foreach ($templates as $templateFileName) {
-            $stream = $twig->tokenize(file_get_contents($templateFileName));
+            $filename = $templateFileName;
+            if (0 === mb_strpos($filename, 'app/Resources/views/')) {
+                $filename = mb_substr($filename, 20);
+            } elseif ($name !== 'app') {
+                $filename       = $templateFileName;
+                $bundleViewsDir = $name . '/Resources/views';
+                $filnamePos     = mb_strpos($filename, $bundleViewsDir);
+                if ($filnamePos === false) {
+                    continue;
+                }
+
+                $filnamePos += mb_strlen($bundleViewsDir) + 1;
+                $loader->addPath(mb_substr($filename, 0, $filnamePos));
+                $filename = mb_substr($filename, $filnamePos);
+            }
+
+            $stream = $twig->tokenize(new \Twig_Source(file_get_contents($templateFileName), $filename));
             $nodes = $twig->parse($stream);
             $template = $twig->compile($nodes);
             // remove first line
             $template = substr($template, strpos($template, "\n")+strlen("\n"));
             $php .= "/*\n * Resource: $name\n * File: $templateFileName\n */\n";
             $php .= $template;
-            $results[$templateFileName]='Scanned';
+            $results[$templateFileName] = 'Scanned';
         }
 
         if (!file_put_contents($path, $php)) {
@@ -142,7 +156,7 @@ abstract class AbstractCommand extends ContainerAwareCommand
         }
 
         // clean .tmp file for further using it as cache
-        if (file_exists("$path.tmp"))  {
+        if (file_exists("$path.tmp")) {
             unlink("$path.tmp");
         }
 
@@ -150,7 +164,7 @@ abstract class AbstractCommand extends ContainerAwareCommand
         $files = $this->findFilesInFolder(dirname($path) . '/../..', 'php');
 
         // define options for finding translation strings within *.php files
-        $options = implode(' ',array(
+        $options = implode(' ', array(
             '--keyword=__:1',
             '--keyword=__n:1,2',
             '--keyword=_:1',
@@ -163,7 +177,7 @@ abstract class AbstractCommand extends ContainerAwareCommand
         ));
 
         $process = new Process('xgettext '.$options);
-        $process->setStdin(implode("\n", $files));
+        $process->setInput(implode("\n", $files));
         $process->run();
         $output = $process->getOutput();
         if (!$process->isSuccessful()) {
@@ -242,7 +256,7 @@ abstract class AbstractCommand extends ContainerAwareCommand
         // clean .tmp file for further using it as cache
         if (!file_exists(dirname($path))) {
             mkdir(dirname($path), 0755, true);
-        } else if (file_exists("$path.tmp")) {
+        } elseif (file_exists("$path.tmp")) {
             unlink("$path.tmp");
         }
 
@@ -255,7 +269,7 @@ abstract class AbstractCommand extends ContainerAwareCommand
         ));
 
         $process = new Process('msgcat '.$options);
-        $process->setStdin(implode("\n", $files));
+        $process->setInput(implode("\n", $files));
         $process->run();
         $output = $process->getOutput();
 

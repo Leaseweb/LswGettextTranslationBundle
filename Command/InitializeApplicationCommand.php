@@ -2,14 +2,10 @@
 
 namespace Lsw\GettextTranslationBundle\Command;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-
-use Symfony\Component\Finder\Finder;
-use Symfony\Component\Routing\Exception\ResourceNotFoundException;
+use Symfony\Component\Console\Question\Question;
 
 /**
  * InitializeBundleCommand extracts records to be translated from the current application
@@ -54,6 +50,8 @@ EOT
      * @param OutputInterface $output Output interface
      *
      * @see Command
+     *
+     * @return int
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -65,6 +63,8 @@ EOT
         foreach ($results as $filename => $status) {
             $output->writeln("$status: $filename");
         }
+
+        return 0;
     }
 
     /**
@@ -74,23 +74,24 @@ EOT
      * @param OutputInterface $output Output interface
      *
      * @see Command
-     * @return mixed
+     * @return void
      */
     protected function interact(InputInterface $input, OutputInterface $output)
     {
         if (!$input->getArgument('languages')) {
-            $languages = $this->getHelper('dialog')->askAndValidate(
-                $output,
-                'Please enter the list of languages (comma seperated):',
-                function($languages)
-                {
-                  if (empty($languages)) {
-                    throw new \Exception('Language list can not be empty');
-                  }
-
-                  return $languages;
+            $questionHelper = $this->getHelper('question');
+            $question = new Question('Please enter the list of languages (comma seperated): ');
+            $question->setValidator(function ($languages) {
+                if (empty($languages)) {
+                    throw new \RuntimeException(
+                        'Language list can not be empty'
+                    );
                 }
-            );
+
+                return $languages;
+            });
+
+            $languages = $questionHelper->ask($input, $output, $question);
             $input->setArgument('languages', $languages);
         }
     }
