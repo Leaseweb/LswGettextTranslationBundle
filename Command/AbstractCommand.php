@@ -163,7 +163,7 @@ abstract class AbstractCommand extends ContainerAwareCommand
         ));
 
         $process = new Process('xgettext '.$options);
-        $process->setStdin(implode("\n", $files));
+        $process->setInput(implode("\n", $files));
         $process->run();
         $output = $process->getOutput();
         if (!$process->isSuccessful()) {
@@ -255,7 +255,7 @@ abstract class AbstractCommand extends ContainerAwareCommand
         ));
 
         $process = new Process('msgcat '.$options);
-        $process->setStdin(implode("\n", $files));
+        $process->setInput(implode("\n", $files));
         $process->run();
         $output = $process->getOutput();
 
