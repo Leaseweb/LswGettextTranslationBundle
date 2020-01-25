@@ -2,14 +2,14 @@
 
 namespace Lsw\GettextTranslationBundle\Command;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Exception;
+use RuntimeException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use Symfony\Component\Console\Question\Question;
-use Symfony\Component\Finder\Finder;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
 /**
@@ -56,12 +56,13 @@ EOT
     /**
      * Execute method get an input texts prepare it for each locale
      *
-     * @param InputInterface  $input  Input interface
+     * @param InputInterface $input Input interface
      * @param OutputInterface $output Output interface
      *
+     * @return int
+     * @throws Exception
      * @see Command
      *
-     * @return int
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -107,7 +108,7 @@ EOT
             $bundleQuestion = new Question('Please give the bundle: ');
             $bundleQuestion->setValidator(function ($bundle) {
                 if (empty($bundle)) {
-                    throw new \RuntimeException(
+                    throw new RuntimeException(
                         'Bundle can not be empty'
                     );
                 }

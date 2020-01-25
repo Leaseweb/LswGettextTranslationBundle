@@ -9,10 +9,13 @@
  */
 namespace Lsw\GettextTranslationBundle\Command;
 
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
+use Twig\Loader\FilesystemLoader;
+use Twig\Source;
 
 /**
  * Contains common command functions for the gettext Bundle commands
@@ -81,7 +84,7 @@ abstract class AbstractCommand extends ContainerAwareCommand
      * @param string $path
      * @param string $name
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     protected function convertTwigToPhp($path, $name)
     {
@@ -103,7 +106,7 @@ abstract class AbstractCommand extends ContainerAwareCommand
         $twig = $this->getContainer()->get('twig');
 
 
-        /** @var \Twig_Loader_Filesystem $loader */
+        /** @var FilesystemLoader $loader */
         $loader = $twig->getLoader();
 
 
@@ -124,7 +127,7 @@ abstract class AbstractCommand extends ContainerAwareCommand
                 $filename = mb_substr($filename, $filnamePos);
             }
 
-            $stream = $twig->tokenize(new \Twig_Source(file_get_contents($templateFileName), $filename));
+            $stream = $twig->tokenize(new Source(file_get_contents($templateFileName), $filename));
 
             $nodes = $twig->parse($stream);
             $template = $twig->compile($nodes);
@@ -136,7 +139,7 @@ abstract class AbstractCommand extends ContainerAwareCommand
         }
 
         if (!file_put_contents($path, $php)) {
-            throw new \Exception('Cannot write intermediate PHP code for twig templates to twig.cache.php in: '.$path);
+            throw new Exception('Cannot write intermediate PHP code for twig templates to twig.cache.php in: '.$path);
         }
 
         return $results;
@@ -146,12 +149,11 @@ abstract class AbstractCommand extends ContainerAwareCommand
     /**
      * Extract translation strings from all *.php files within the given path
      * @param string $path
-     * @return string
-     * @throws \Exception
+     * @return array
+     * @throws Exception
      */
     protected function extractFromPhp($path)
     {
-        $results = array();
 
         // check the path exists
         if (!file_exists(dirname($path))) {
@@ -179,19 +181,19 @@ abstract class AbstractCommand extends ContainerAwareCommand
             "-o \"$path.tmp\"",
         ));
 
-        $process = new Process('xgettext '.$options);
+        $process = new Process(['xgettext '.$options]);
         $process->setInput(implode("\n", $files));
         $process->run();
         $output = $process->getOutput();
         if (!$process->isSuccessful()) {
-            throw new \Exception($process->getErrorOutput());
+            throw new Exception($process->getErrorOutput());
         }
         if ($output) {
             echo "Warning: $output\n";
         }
 
         if (!file_exists("$path.tmp")) {
-            throw new \Exception('xgettext failed extracting messages for translating. Did you install gettext?');
+            throw new Exception('xgettext failed extracting messages for translating. Did you install gettext?');
             // tell about windows: http://www.gtk.org/download/win32.php
         }
         rename("$path.tmp", $path);
@@ -247,8 +249,8 @@ abstract class AbstractCommand extends ContainerAwareCommand
      * Combine list of .po files into one
      * @param array $files
      * @param string $path
-     * @return string
-     * @throws \Exception
+     * @return array
+     * @throws Exception
      */
     protected function combineFiles(array $files, $path)
     {
@@ -271,17 +273,16 @@ abstract class AbstractCommand extends ContainerAwareCommand
             "-o $path.tmp",
         ));
 
-        $process = new Process('msgcat '.$options);
+        $process = new Process(['msgcat '.$options]);
         $process->setInput(implode("\n", $files));
         $process->run();
-        $output = $process->getOutput();
 
         if (!$process->isSuccessful()) {
-            throw new \Exception($process->getErrorOutput());
+            throw new Exception($process->getErrorOutput());
         }
 
         if (!file_exists("$path.tmp")) {
-            throw new \Exception('msgcat failed concatenating messages for translating. Did you install gettext?');
+            throw new Exception('msgcat failed concatenating messages for translating. Did you install gettext?');
         }
         rename("$path.tmp", $path);
         foreach ($files as $filename) {
@@ -297,7 +298,7 @@ abstract class AbstractCommand extends ContainerAwareCommand
      * @param string $file
      * @param string $path
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     protected function compile($file,$path)
     {
@@ -313,15 +314,15 @@ abstract class AbstractCommand extends ContainerAwareCommand
             $file,
         ));
 
-        $process = new Process('msgfmt '.$options);
+        $process = new Process(['msgfmt '.$options]);
         $process->run();
-        $output = $process->getOutput();
+
         if (!$process->isSuccessful()) {
-            throw new \Exception($process->getErrorOutput());
+            throw new Exception($process->getErrorOutput());
         }
 
         if (!file_exists("$path.tmp")) {
-            throw new \Exception('msgfmt failed to compile messages for translating. Did you install gettext?');
+            throw new Exception('msgfmt failed to compile messages for translating. Did you install gettext?');
         }
         rename("$path.tmp", $path);
         $results[$this->relative($file)] = 'Scanned';

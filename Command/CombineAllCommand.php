@@ -10,14 +10,13 @@
 
 namespace Lsw\GettextTranslationBundle\Command;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Exception;
+use RuntimeException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
-use Symfony\Component\Finder\Finder;
-use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
 /**
  * ExtractApplicationCommand extracts records to be translated from the current application
@@ -65,12 +64,13 @@ EOT
     /**
      * Execute method get an input texts prepare it for each locale
      *
-     * @param InputInterface  $input  Input interface
+     * @param InputInterface $input Input interface
      * @param OutputInterface $output Output interface
      *
+     * @return int
+     * @throws Exception
      * @see Command
      *
-     * @return int
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -153,7 +153,7 @@ EOT
             $languageQuestion = new Question('Please enter the list of languages (comma seperated): ');
             $languageQuestion->setValidator(function ($languages) {
                 if (empty($languages)) {
-                    throw new \RuntimeException(
+                    throw new RuntimeException(
                         'Language list can not be empty'
                     );
                 }

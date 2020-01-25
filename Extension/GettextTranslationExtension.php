@@ -1,11 +1,14 @@
 <?php
 namespace Lsw\GettextTranslationBundle\Extension;
 
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFunction;
+
 /**
  * Gettext translation extention
  *
  */
-class GettextTranslationExtension extends \Twig_Extension
+class GettextTranslationExtension extends AbstractExtension
 {
   /**
    * Sets aliases for functions
@@ -16,10 +19,10 @@ class GettextTranslationExtension extends \Twig_Extension
   public function getFunctions()
   {
     return array(
-      new \Twig_SimpleFunction('_', 'gettext'),
-      new \Twig_SimpleFunction('_n', 'ngettext'),
-      new \Twig_SimpleFunction('__' , array($this, 'gettext')),
-      new \Twig_SimpleFunction('__n', array($this, 'ngettext')),
+      new TwigFunction('_', 'gettext'),
+      new TwigFunction('_n', 'ngettext'),
+      new TwigFunction('__' , array($this, 'gettext')),
+      new TwigFunction('__n', array($this, 'ngettext')),
     );
   }
 
