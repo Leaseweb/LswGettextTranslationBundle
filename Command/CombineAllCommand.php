@@ -15,7 +15,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-
+use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
@@ -69,17 +69,19 @@ EOT
      * @param OutputInterface $output Output interface
      *
      * @see Command
+     *
+     * @return int
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $root = $this->getContainer()->getParameter('kernel.root_dir');
-        chdir($root.'/..');
+        chdir($root . '/..');
 
         $configFile = $root."/Resources/gettext/version";
         $languages  = explode(',', trim($input->getArgument('languages'), ','));
         $bundles    = $this->getContainer()->get('kernel')->getBundles();
         $version    = file_exists($configFile) ? file_get_contents($configFile) : "";
-        $newVersion = $input->getOption('increase-version') ? "_" . strtotime("now") : $version;
+        $newVersion = $input->getOption('increase-version') ? '_' . time() : $version;
 
         foreach ($languages as $lang) {
             $lang = trim($lang);
@@ -108,7 +110,7 @@ EOT
             $path = "$root/Resources/gettext/combined/$lang/LC_MESSAGES/messages$newVersion.mo";
             $results = $this->compile($file, $path);
             foreach ($results as $filename => $status) {
-              $output->writeln("$status: $filename");
+                $output->writeln("$status: $filename");
             }
 
             if (!$input->getOption('keep-messages')) {
@@ -117,7 +119,7 @@ EOT
 
             if ($version != $newVersion) {
                 if (!file_put_contents($configFile, $newVersion)) {
-                    $output->writeln("Version was not saved: " . $newVersion);
+                    $output->writeln('Version was not saved: ' . $newVersion);
                 }
 
                 if (file_exists("$root/Resources/gettext/combined/$lang/LC_MESSAGES/messages$version.po")) {
@@ -130,6 +132,8 @@ EOT
 
         }
 
+        return 0;
+
         //http://www.gnu.org/software/gettext/manual/html_node/xgettext-Invocation.html
     }
 
@@ -140,23 +144,24 @@ EOT
      * @param OutputInterface $output Output interface
      *
      * @see Command
-     * @return mixed
+     * @return void
      */
     protected function interact(InputInterface $input, OutputInterface $output)
     {
         if (!$input->getArgument('languages')) {
-            $languages = $this->getHelper('dialog')->askAndValidate(
-                $output,
-                'Please enter the list of languages (comma seperated):',
-                function($languages)
-                {
-                  if (empty($languages)) {
-                    throw new \Exception('Language list can not be empty');
-                  }
-
-                  return $languages;
+            $questionHelper   = $this->getHelper('question');
+            $languageQuestion = new Question('Please enter the list of languages (comma seperated): ');
+            $languageQuestion->setValidator(function ($languages) {
+                if (empty($languages)) {
+                    throw new \RuntimeException(
+                        'Language list can not be empty'
+                    );
                 }
-            );
+
+                return $languages;
+            });
+
+            $languages = $questionHelper->ask($input, $output, $languageQuestion);
             $input->setArgument('languages', $languages);
         }
     }
