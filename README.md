@@ -1,14 +1,14 @@
 LswGettextTranslationBundle
 =============
 
-The LswGettextTranslationBundle adds gettext translation support to your Symfony2
+The LswGettextTranslationBundle adds gettext translation support to your Symfony4
 application. It is aimed to be faster and more user-friendly than the built-in 
-translation support of Symfony2.
+translation support of Symfony4.
 
 ## Requirements
 
 * PHP with gettext support
-* Symfony 2.8+
+* Symfony 4+
 
 ## Installation
 
