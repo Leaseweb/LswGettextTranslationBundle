@@ -2,13 +2,14 @@
 
 namespace Lsw\GettextTranslationBundle\Command;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Exception;
+use RuntimeException;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-use Symfony\Component\Finder\Finder;
+use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
 /**
@@ -55,10 +56,13 @@ EOT
     /**
      * Execute method get an input texts prepare it for each locale
      *
-     * @param InputInterface  $input  Input interface
+     * @param InputInterface $input Input interface
      * @param OutputInterface $output Output interface
      *
+     * @return int
+     * @throws Exception
      * @see Command
+     *
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -84,6 +88,8 @@ EOT
         if (!$input->getOption('keep-cache')) {
             unlink($twig);
         }
+
+        return 0;
     }
 
     /**
@@ -93,23 +99,24 @@ EOT
      * @param OutputInterface $output Output interface
      *
      * @see Command
-     * @return mixed
+     * @return void
      */
     protected function interact(InputInterface $input, OutputInterface $output)
     {
         if (!$input->getArgument('bundle')) {
-            $bundle = $this->getHelper('dialog')->askAndValidate(
-                $output,
-                'Please give the bundle:',
-                function($bundle)
-                {
-                    if (empty($bundle)) {
-                        throw new \Exception('Bundle can not be empty');
-                    }
-
-                    return $bundle;
+            $questionHelper = $this->getHelper('question');
+            $bundleQuestion = new Question('Please give the bundle: ');
+            $bundleQuestion->setValidator(function ($bundle) {
+                if (empty($bundle)) {
+                    throw new RuntimeException(
+                        'Bundle can not be empty'
+                    );
                 }
-            );
+
+                return $bundle;
+            });
+
+            $bundle = $questionHelper->ask($input, $output, $bundleQuestion);
             $input->setArgument('bundle', $bundle);
         }
     }

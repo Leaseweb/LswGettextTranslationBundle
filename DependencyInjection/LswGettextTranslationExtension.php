@@ -2,6 +2,7 @@
 
 namespace Lsw\GettextTranslationBundle\DependencyInjection;
 
+use Exception;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
@@ -25,14 +26,15 @@ class LswGettextTranslationExtension extends Extension
 
     }
 
-  /**
-   * Loads services.yml and config.yml to a container
-   *
-   * @param array            $configs   Configs array
-   * @param ContainerBuilder $container Container builder
-   *
-   * @see \Symfony\Component\DependencyInjection\Extension\ExtensionInterface::load()
-   */
+    /**
+     * Loads services.yml and config.yml to a container
+     *
+     * @param array $configs Configs array
+     * @param ContainerBuilder $container Container builder
+     *
+     * @throws Exception
+     * @see \Symfony\Component\DependencyInjection\Extension\ExtensionInterface::load()
+     */
   public function load(array $configs, ContainerBuilder $container)
   {
     $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
@@ -44,7 +46,7 @@ class LswGettextTranslationExtension extends Extension
    * Returns an alias for gettext translation extension
    *
    * @see \Symfony\Component\HttpKernel\DependencyInjection\Extension::getAlias()
-   * @return st	ring
+   * @return string
    */
   public function getAlias()
   {
